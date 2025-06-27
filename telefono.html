@@ -60,7 +60,7 @@
 </head>
 <body>
   <h2>Necesitamos actualizar tu teléfono</h2>
-  <input type="tel" id="telefono" placeholder="9 dígitos" maxlength="9" pattern="\d{9}" />
+  <input type="tel" id="telefono" oninput="this.value = this.value.replace(/\D/g, '').slice(0,9);" placeholder="9 dígitos" maxlength="9" pattern="\d{9}" />
   <button onclick="enviarTelefono()">Enviar</button>
 
   <div class="loading" id="loading">
