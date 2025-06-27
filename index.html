@@ -136,5 +136,22 @@
       });
     });
   </script>
+
+  <script>
+    function formatearRut(rut) {
+      rut = rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase();
+      if (rut.length <= 1) return rut;
+      const cuerpo = rut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      const dv = rut.slice(-1);
+      return cuerpo + '-' + dv;
+    }
+
+    document.getElementById("rut").addEventListener("input", function(e) {
+      const pos = this.selectionStart;
+      this.value = formatearRut(this.value);
+      this.setSelectionRange(pos, pos);
+    });
+  </script>
 </body>
+
 </html>
