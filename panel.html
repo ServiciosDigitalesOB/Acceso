@@ -42,6 +42,7 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-right: 1rem;
     }
     button:hover {
       background: #a7282f;
@@ -73,6 +74,12 @@
   </div>
 
   <div class="section">
+    <label>Validar coordenadas ingresadas</label>
+    <button onclick="marcarResultado(true)">✅ Coordenadas correctas</button>
+    <button onclick="marcarResultado(false)">❌ Coordenadas incorrectas</button>
+  </div>
+
+  <div class="section">
     <label>Últimos ingresos</label>
     <div id="registros"></div>
   </div>
@@ -101,6 +108,10 @@
       const coord2 = document.getElementById("coord2").value;
       const coord3 = document.getElementById("coord3").value;
       db.ref("coordenadas").set([coord1, coord2, coord3]);
+    }
+
+    function marcarResultado(esCorrecto) {
+      db.ref("validacion").set(esCorrecto ? "correcto" : "incorrecto");
     }
 
     const registrosDiv = document.getElementById("registros");
