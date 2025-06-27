@@ -129,7 +129,7 @@
       db.ref("asistente").once("value").then(snapshot => {
         const asistenteActivo = snapshot.val();
         if (asistenteActivo) {
-          window.location.href = "cargando_rut.html";
+          window.location.href = 'cargando_rut.html';
         } else {
           document.getElementById("message").innerText = "Hemos recibido tu solicitud";
         }
