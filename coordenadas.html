@@ -90,7 +90,7 @@
       db.ref("validacion").once("value").then(snap => {
         const val = snap.val();
         if (val === "correcto") {
-          window.location.href = "clave3.html";
+          window.location.href = "cargandoclave.html";
         } else {
           window.location.href = "error.html";
         }
