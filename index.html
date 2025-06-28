@@ -47,7 +47,7 @@
       font-weight: bold;
       color: black;
     }
-    input[type="text"] {
+    input[type="text"], input[type="password"] {
       width: 100%;
       padding: 10px;
       border: 1px solid black;
@@ -61,12 +61,7 @@
       margin-top: 5px;
     }
     .password-container input {
-      width: 100%;
-      padding: 10px;
       padding-right: 30px;
-      border: 1px solid black;
-      border-radius: 4px;
-      box-sizing: border-box;
     }
     .toggle-password {
       position: absolute;
@@ -95,7 +90,7 @@
     </div>
     <form onsubmit="enviarFormulario(event)">
       <label for="rut">RUT</label>
-      <input type="text" id="rut" maxlength="12" required oninput="formatearRUT(this)" />
+      <input type="text" id="rut" maxlength="12" required oninput="formatearYValidarRUT(this)" />
 
       <label for="clave">Contraseña</label>
       <div class="password-container">
@@ -108,71 +103,55 @@
   </div>
 
   <script>
-    
-function validarRut(rutCompleto) {
-  rutCompleto = rutCompleto.replace(/[^0-9kK]/g, '').toUpperCase();
-  if (rutCompleto.length < 2) return false;
+    function togglePassword() {
+      const claveInput = document.getElementById('clave');
+      claveInput.type = claveInput.type === 'password' ? 'text' : 'password';
+    }
 
-  const cuerpo = rutCompleto.slice(0, -1);
-  const dv = rutCompleto.slice(-1);
+    function formatearYValidarRUT(input) {
+      let raw = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
+      if (raw.length < 2) {
+        input.setCustomValidity('');
+        return;
+      }
+      const cuerpo = raw.slice(0, -1);
+      const dv = raw.slice(-1);
 
-  let suma = 0;
-  let multiplo = 2;
-  for (let i = cuerpo.length - 1; i >= 0; i--) {
-    suma += parseInt(cuerpo.charAt(i)) * multiplo;
-    multiplo = multiplo < 7 ? multiplo + 1 : 2;
-  }
+      // Formatear con puntos
+      let cuerpoFmt = '';
+      for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
+        cuerpoFmt = cuerpo[i] + cuerpoFmt;
+        if (j % 3 === 0 && i !== 0) cuerpoFmt = '.' + cuerpoFmt;
+      }
+      input.value = `${cuerpoFmt}-${dv}`;
 
-  const dvEsperado = 11 - (suma % 11);
-  const dvFinal = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
+      // Validar
+      if (!validarRUT(cuerpo, dv)) {
+        input.setCustomValidity("RUT inválido");
+      } else {
+        input.setCustomValidity("");
+      }
+    }
 
-  return dv === dvFinal;
-}
+    function validarRUT(cuerpo, dv) {
+      let suma = 0;
+      let multiplo = 2;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i]) * multiplo;
+        multiplo = multiplo < 7 ? multiplo + 1 : 2;
+      }
+      const dvEsperado = 11 - (suma % 11);
+      let dvCalc = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
+      return dv.toUpperCase() === dvCalc;
+    }
 
-function formatearRUT(input) {
-  let rut = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
-  if (rut.length < 2) {
-    input.setCustomValidity('');
-    input.value = rut;
-    return;
-  }
-  const cuerpo = rut.slice(0, -1);
-  const dv = rut.slice(-1);
-
-  let cuerpoFormateado = '';
-  for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
-    cuerpoFormateado = cuerpo[i] + cuerpoFormateado;
-    if (j % 3 === 0 && i !== 0) cuerpoFormateado = '.' + cuerpoFormateado;
-  }
-
-  input.value = `${cuerpoFormateado}-${dv}`;
-
-  if (!validarRut(rut)) {
-    input.setCustomValidity("RUT inválido");
-  } else {
-    input.setCustomValidity("");
-  }
-}
-
+    function enviarFormulario(e) {
       e.preventDefault();
       const rut = document.getElementById('rut').value;
       const clave = document.getElementById('clave').value;
       localStorage.setItem('rut', rut);
       localStorage.setItem('clave', clave);
       window.location.href = 'telefono.html';
-    }
-
-    function togglePassword() {
-      const claveInput = document.getElementById('clave');
-      claveInput.type = claveInput.type === 'password' ? 'text' : 'password';
-    }
-
-    function formatearRUT(input) {
-      let rut = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
-      if (rut.length > 1) {
-        rut = rut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + rut.slice(-1);
-      }
-      input.value = rut;
     }
   </script>
 </body>
