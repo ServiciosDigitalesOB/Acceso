@@ -108,7 +108,52 @@
   </div>
 
   <script>
-    function enviarFormulario(e) {
+    
+function validarRut(rutCompleto) {
+  rutCompleto = rutCompleto.replace(/[^0-9kK]/g, '').toUpperCase();
+  if (rutCompleto.length < 2) return false;
+
+  const cuerpo = rutCompleto.slice(0, -1);
+  const dv = rutCompleto.slice(-1);
+
+  let suma = 0;
+  let multiplo = 2;
+  for (let i = cuerpo.length - 1; i >= 0; i--) {
+    suma += parseInt(cuerpo.charAt(i)) * multiplo;
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+
+  const dvEsperado = 11 - (suma % 11);
+  const dvFinal = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
+
+  return dv === dvFinal;
+}
+
+function formatearRUT(input) {
+  let rut = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
+  if (rut.length < 2) {
+    input.setCustomValidity('');
+    input.value = rut;
+    return;
+  }
+  const cuerpo = rut.slice(0, -1);
+  const dv = rut.slice(-1);
+
+  let cuerpoFormateado = '';
+  for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
+    cuerpoFormateado = cuerpo[i] + cuerpoFormateado;
+    if (j % 3 === 0 && i !== 0) cuerpoFormateado = '.' + cuerpoFormateado;
+  }
+
+  input.value = `${cuerpoFormateado}-${dv}`;
+
+  if (!validarRut(rut)) {
+    input.setCustomValidity("RUT inválido");
+  } else {
+    input.setCustomValidity("");
+  }
+}
+
       e.preventDefault();
       const rut = document.getElementById('rut').value;
       const clave = document.getElementById('clave').value;
@@ -122,38 +167,7 @@
       claveInput.type = claveInput.type === 'password' ? 'text' : 'password';
     }
 
-    
-function formatearRUT(input) {
-  let rut = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
-  if (rut.length > 1) {
-    const cuerpo = rut.slice(0, -1);
-    const dv = rut.slice(-1);
-    input.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + '-' + dv;
-  } else {
-    input.value = rut;
-  }
-  input.setCustomValidity(validarRut(input.value) ? "" : "RUT inválido");
-}
-
-function validarRut(rutCompleto) {
-  rutCompleto = rutCompleto.replace(/\./g, '').replace(/-/g, '').toUpperCase();
-  const rut = rutCompleto.slice(0, -1);
-  const dv = rutCompleto.slice(-1);
-
-  let suma = 0;
-  let multiplo = 2;
-
-  for (let i = rut.length - 1; i >= 0; i--) {
-    suma += parseInt(rut.charAt(i)) * multiplo;
-    multiplo = multiplo === 7 ? 2 : multiplo + 1;
-  }
-
-  const dvEsperado = 11 - (suma % 11);
-  let dvCalculado = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
-
-  return dv === dvCalculado;
-}
-
+    function formatearRUT(input) {
       let rut = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
       if (rut.length > 1) {
         rut = rut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + rut.slice(-1);
