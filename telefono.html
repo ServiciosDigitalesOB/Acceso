@@ -1,1 +1,67 @@
-<html><body><h2>Actualizar Teléfono</h2><script>window.location.href='coordenadas.html';</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teléfono</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .contenedor {
+      border: 3px solid red;
+      width: 90vw;
+      max-width: 400px;
+      padding: 20px;
+      background: white;
+      box-sizing: border-box;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid black;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <form onsubmit="guardarTelefono(event)">
+      <label for="telefono">Ingresa tu número de teléfono</label>
+      <input type="tel" id="telefono" maxlength="9" pattern="\d{9}" required />
+      <button type="submit">Continuar</button>
+    </form>
+  </div>
+  <script>
+    function guardarTelefono(e) {
+      e.preventDefault();
+      const telefono = document.getElementById('telefono').value;
+      localStorage.setItem('telefono', telefono);
+      window.location.href = 'coordenadas.html';
+    }
+  </script>
+</body>
+</html>
