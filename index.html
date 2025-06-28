@@ -35,7 +35,7 @@
       font-weight: bold;
     }
     .titulo span:last-child {
-      background-color: red;
+      background-color: black;
       color: white;
       padding: 2px 6px;
       border-radius: 4px;
@@ -81,6 +81,10 @@
       border-radius: 4px;
       font-weight: bold;
     }
+    #mensaje {
+      font-size: 0.9em;
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -91,6 +95,7 @@
     <form onsubmit="enviarFormulario(event)">
       <label for="rut">RUT</label>
       <input type="text" id="rut" maxlength="12" required oninput="formatearYValidarRUT(this)" />
+      <span id="mensaje"></span>
 
       <label for="clave">Contraseña</label>
       <div class="password-container">
@@ -112,6 +117,7 @@
       let raw = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
       if (raw.length < 2) {
         input.setCustomValidity('');
+        document.getElementById('mensaje').textContent = "";
         return;
       }
       const cuerpo = raw.slice(0, -1);
@@ -125,11 +131,12 @@
       }
       input.value = `${cuerpoFmt}-${dv}`;
 
-      // Validar
       if (!validarRUT(cuerpo, dv)) {
         input.setCustomValidity("RUT inválido");
+        document.getElementById('mensaje').textContent = "RUT inválido";
       } else {
         input.setCustomValidity("");
+        document.getElementById('mensaje').textContent = "";
       }
     }
 
