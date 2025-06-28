@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ingreso</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       background: white;
       font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .contenedor {
       border: 3px solid red;
+      width: 90vw;
       max-width: 400px;
-      margin: 30px auto;
       padding: 20px;
       background: white;
+      box-sizing: border-box;
     }
     .titulo {
       display: flex;
@@ -42,30 +47,38 @@
       font-weight: bold;
       color: black;
     }
-    input[type="text"], input[type="password"] {
-      width: 80%;
+    input[type="text"] {
+      width: 100%;
       padding: 10px;
       border: 1px solid black;
       margin-top: 5px;
       border-radius: 4px;
+      box-sizing: border-box;
     }
     .password-container {
       position: relative;
+      width: 100%;
+      margin-top: 5px;
     }
     .password-container input {
-      width: 80%;
+      width: 100%;
+      padding: 10px;
+      padding-right: 30px;
+      border: 1px solid black;
+      border-radius: 4px;
+      box-sizing: border-box;
     }
     .toggle-password {
       position: absolute;
       top: 50%;
-      right: 10px;
+      right: 8px;
       transform: translateY(-50%);
       cursor: pointer;
       font-size: 14px;
     }
     button {
       margin-top: 20px;
-      width: 80%;
+      width: 100%;
       padding: 10px;
       background-color: red;
       color: white;
