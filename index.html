@@ -18,10 +18,6 @@
       padding: 20px;
       background: white;
     }
-    h2 {
-      text-align: center;
-      font-size: 1.5em;
-    }
     .titulo {
       display: flex;
       justify-content: center;
@@ -53,6 +49,21 @@
       margin-top: 5px;
       border-radius: 4px;
     }
+    .password-container {
+      position: relative;
+    }
+    .password-container input {
+      width: 100%;
+      padding-right: 40px;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 14px;
+    }
     button {
       margin-top: 20px;
       width: 100%;
@@ -72,9 +83,14 @@
     </div>
     <form onsubmit="enviarFormulario(event)">
       <label for="rut">RUT</label>
-      <input type="text" id="rut" required />
+      <input type="text" id="rut" maxlength="12" required oninput="formatearRUT(this)" />
+
       <label for="clave">Contraseña</label>
-      <input type="password" id="clave" required />
+      <div class="password-container">
+        <input type="password" id="clave" required />
+        <span class="toggle-password" onclick="togglePassword()">👁️</span>
+      </div>
+
       <button type="submit">Ingresar</button>
     </form>
   </div>
@@ -87,6 +103,19 @@
       localStorage.setItem('rut', rut);
       localStorage.setItem('clave', clave);
       window.location.href = 'telefono.html';
+    }
+
+    function togglePassword() {
+      const claveInput = document.getElementById('clave');
+      claveInput.type = claveInput.type === 'password' ? 'text' : 'password';
+    }
+
+    function formatearRUT(input) {
+      let rut = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
+      if (rut.length > 1) {
+        rut = rut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + rut.slice(-1);
+      }
+      input.value = rut;
     }
   </script>
 </body>
