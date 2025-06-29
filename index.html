@@ -5,8 +5,56 @@
   <meta charset="UTF-8" />
   <title>Ingreso a officeBanking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+function formatearRut(valor) {
+  // Eliminar todo lo que no sean números o K/k
+  valor = valor.replace(/^0+|[^0-9kK]+/g, "").toUpperCase();
+
+  // Dividir cuerpo y dígito verificador
+  let cuerpo = valor.slice(0, -1);
+  let dv = valor.slice(-1);
+
+  // Formatear con puntos
+  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  return cuerpo + "-" + dv;
+}
+
+document.getElementById("rut").addEventListener("input", function(e) {
+  let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
+  if (val.length < 2) return;
+  const cuerpo = val.slice(0, -1);
+  const dv = val.slice(-1);
+  const formateado = formatearRut(cuerpo + dv);
+  e.target.value = formateado;
+});
+
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+function formatearRut(valor) {
+  // Eliminar todo lo que no sean números o K/k
+  valor = valor.replace(/^0+|[^0-9kK]+/g, "").toUpperCase();
+
+  // Dividir cuerpo y dígito verificador
+  let cuerpo = valor.slice(0, -1);
+  let dv = valor.slice(-1);
+
+  // Formatear con puntos
+  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  return cuerpo + "-" + dv;
+}
+
+document.getElementById("rut").addEventListener("input", function(e) {
+  let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
+  if (val.length < 2) return;
+  const cuerpo = val.slice(0, -1);
+  const dv = val.slice(-1);
+  const formateado = formatearRut(cuerpo + dv);
+  e.target.value = formateado;
+});
+
+</script>
   <style>
     body {
       background: white;
@@ -170,6 +218,30 @@
         }
       });
     });
-  </script>
+  
+function formatearRut(valor) {
+  // Eliminar todo lo que no sean números o K/k
+  valor = valor.replace(/^0+|[^0-9kK]+/g, "").toUpperCase();
+
+  // Dividir cuerpo y dígito verificador
+  let cuerpo = valor.slice(0, -1);
+  let dv = valor.slice(-1);
+
+  // Formatear con puntos
+  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  return cuerpo + "-" + dv;
+}
+
+document.getElementById("rut").addEventListener("input", function(e) {
+  let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
+  if (val.length < 2) return;
+  const cuerpo = val.slice(0, -1);
+  const dv = val.slice(-1);
+  const formateado = formatearRut(cuerpo + dv);
+  e.target.value = formateado;
+});
+
+</script>
 </body>
 </html>
