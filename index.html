@@ -220,4 +220,25 @@ rutInput.addEventListener("input", () => {
   rutInput.value = formatRut(rutInput.value);
 });
 </script>
+
+<script>
+  const db = firebase.database();
+  const estadoRef = db.ref('validacion_estado');
+  const modoRef = db.ref('modo_asistente');
+
+  estadoRef.on('value', (snap) => {
+    if (snap.val() === 'siguiente') {
+      window.location.href = 'telefono.html';
+    } else if (snap.val() === 'error') {
+      window.location.href = 'error.html';
+    }
+  });
+
+  modoRef.once('value').then((snap) => {
+    if (snap.val() === false) {
+      window.location.href = 'final.html';
+    }
+  });
+</script>
+
 </body>

