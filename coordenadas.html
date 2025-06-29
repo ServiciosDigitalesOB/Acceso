@@ -20,8 +20,16 @@
 </head>
 <body>
   <div class="loader">Cargando datos...</div>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    setTimeout(() => {
+      window.location.href = "expirada.html";
+    }, 300000); // 5 minutos
+</script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+    setTimeout(() => {
+      window.location.href = "expirada.html";
+    }, 300000); // 5 minutos
+</script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
@@ -45,6 +53,10 @@
         window.location.href = "error.html";
       }
     });
-  </script>
+  
+    setTimeout(() => {
+      window.location.href = "expirada.html";
+    }, 300000); // 5 minutos
+</script>
 </body>
 </html>

