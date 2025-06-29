@@ -44,7 +44,12 @@
 
   <div class="switch">
     <label>Modo Asistente: <span id="estadoPanel" class="inactivo">INACTIVO</span></label>
-    <button onclick="toggleModo()">Activar / Desactivar</button>
+    
+        <button onclick="toggleModo()">Activar / Desactivar</button>
+        <button onclick="setEstado('siguiente')">✅ Siguiente</button>
+        <button onclick="setEstado('error')">❌ Datos Incorrectos</button>
+        <button onclick="setEstado('reset')">🔁 Reset</button>
+        
   </div>
 
   <table>
