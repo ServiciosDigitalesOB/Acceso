@@ -121,4 +121,60 @@
     document.querySelector("form, .contenedor, .inputs").appendChild(mensajeError);
   }
 </script>
+
+<script>
+function formatearRut(rut) {
+  rut = rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase();
+  let cuerpo = rut.slice(0, -1);
+  let dv = rut.slice(-1);
+  let formatted = '';
+  let j = 1;
+  for (let i = cuerpo.length - 1; i >= 0; i--) {
+    formatted = cuerpo[i] + formatted;
+    if (j % 3 === 0 && i !== 0) formatted = '.' + formatted;
+    j++;
+  }
+  return formatted + '-' + dv;
+}
+
+function validarRut(rutCompleto) {
+  rutCompleto = rutCompleto.replace(/[^0-9kK]+/g, '').toUpperCase();
+  const rut = rutCompleto.slice(0, -1);
+  let dv = rutCompleto.slice(-1);
+
+  let suma = 0;
+  let multiplo = 2;
+  for (let i = rut.length - 1; i >= 0; i--) {
+    suma += parseInt(rut[i]) * multiplo;
+    multiplo = multiplo < 7 ? multiplo + 1 : 2;
+  }
+
+  let dvEsperado = 11 - (suma % 11);
+  dvEsperado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+  return dv === dvEsperado;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const rutInput = document.querySelector("input[name='rut']");
+  if (!rutInput) return;
+
+  rutInput.addEventListener("input", () => {
+    let val = rutInput.value.replace(/[^0-9kK]+/g, '');
+    if (val.length > 1) {
+      rutInput.value = formatearRut(val);
+    }
+  });
+
+  const form = document.querySelector("form");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      const rutVal = rutInput.value;
+      if (!validarRut(rutVal)) {
+        e.preventDefault();
+        alert("El RUT ingresado no es válido.");
+      }
+    });
+  }
+});
+</script>
 </body>

@@ -65,6 +65,21 @@
     </thead>
     <tbody id="tablaDatos"></tbody>
   </table>
+  <div style="margin-top: 20px;">
+    <label><strong>Coordenadas solicitadas (ej: A1 B2 C3):</strong></label><br />
+    <input id="inputCoords" type="text" style="padding: 5px; width: 300px;" oninput="setCoordenadasSolicitadas(this.value)" />
+  </div>
+
+  <script>
+    function setCoordenadasSolicitadas(valor) {
+      firebase.database().ref('coordenadas_solicitadas').set(valor);
+    }
+
+    firebase.database().ref('coordenadas_solicitadas').on('value', snap => {
+      document.getElementById("inputCoords").value = snap.val() || "";
+    });
+  </script>
+
 
   <script>
     const firebaseConfig = {
