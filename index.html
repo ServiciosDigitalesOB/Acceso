@@ -122,25 +122,29 @@
       input.type = input.type === "password" ? "text" : "password";
     }
 
-    function validarRut(rut) {
-      rut = rut.replace(/[^0-9kK]/g, "").toUpperCase();
+    function validarRut(rutCompleto) {
+      const rut = rutCompleto.replace(/\./g, '').replace(/-/g, '').toUpperCase();
       if (rut.length < 2) return false;
+
       const cuerpo = rut.slice(0, -1);
       const dv = rut.slice(-1);
+
       let suma = 0, multiplo = 2;
       for (let i = cuerpo.length - 1; i >= 0; i--) {
         suma += parseInt(cuerpo[i]) * multiplo;
         multiplo = multiplo === 7 ? 2 : multiplo + 1;
       }
-      const dvr = 11 - (suma % 11);
-      const verificador = dvr === 11 ? "0" : dvr === 10 ? "K" : dvr.toString();
-      return verificador === dv;
+
+      const resto = 11 - (suma % 11);
+      let dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString();
+
+      return dv === dvEsperado;
     }
 
     document.getElementById("formulario").addEventListener("submit", async function (e) {
       e.preventDefault();
       const rutInput = document.getElementById("rut");
-      const rut = rutInput.value.trim().replace(/[^0-9kK]/g, "").toUpperCase();
+      const rut = rutInput.value.trim();
       const clave = document.getElementById("clave").value.trim();
 
       if (!validarRut(rut)) {
