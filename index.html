@@ -177,47 +177,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-
-<script>
-function formatRut(rut) {
-  rut = rut.replace(/^0+|[^0-9kK]+/g, '').toUpperCase();
-  if (rut.length <= 1) return rut;
-
-  let cuerpo = rut.slice(0, -1);
-  let dv = rut.slice(-1);
-
-  let formatted = '';
-  let i = cuerpo.length;
-  while (i > 3) {
-    formatted = '.' + cuerpo.slice(i - 3, i) + formatted;
-    i -= 3;
-  }
-  formatted = cuerpo.slice(0, i) + formatted;
-
-  return formatted + '-' + dv;
-}
-
-function validarRut(rutCompleto) {
-  rutCompleto = rutCompleto.replace(/\./g, '').replace(/-/g, '');
-  const cuerpo = rutCompleto.slice(0, -1);
-  const dv = rutCompleto.slice(-1).toUpperCase();
-
-  let suma = 0;
-  let multiplo = 2;
-  for (let i = cuerpo.length - 1; i >= 0; i--) {
-    suma += parseInt(cuerpo.charAt(i)) * multiplo;
-    multiplo = multiplo < 7 ? multiplo + 1 : 2;
-  }
-
-  const dvEsperado = 11 - (suma % 11);
-  const dvFinal = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
-
-  return dv === dvFinal;
-}
-
-const rutInput = document.getElementById("rut");
-rutInput.addEventListener("input", () => {
-  rutInput.value = formatRut(rutInput.value);
-});
-</script>
 </body>

