@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panel en Vivo - Estilo Excel</title>
+  <title>Panel en Vivo - Control y Registros</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
@@ -14,6 +14,48 @@
     }
     h2 {
       color: #444;
+    }
+    .switch-container {
+      margin-bottom: 20px;
+    }
+    .switch-label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #d32f2f;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
     }
     table {
       border-collapse: collapse;
@@ -34,14 +76,19 @@
     tr:nth-child(even) {
       background-color: #f2f2f2;
     }
-    .small {
-      font-size: 12px;
-      color: #888;
-    }
   </style>
 </head>
 <body>
-  <h2>Registros en Vivo</h2>
+  <h2>Panel de Control y Registros en Vivo</h2>
+
+  <div class="switch-container">
+    <label class="switch-label">Flujo activo:</label>
+    <label class="switch">
+      <input type="checkbox" id="modoSwitch">
+      <span class="slider"></span>
+    </label>
+  </div>
+
   <table id="tabla">
     <thead>
       <tr>
@@ -69,9 +116,12 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const ref = db.ref("registros");
 
-    ref.on("child_added", snapshot => {
+    const refRegistros = db.ref("registros");
+    const refPanel = db.ref("estado_panel");
+
+    // Mostrar registros en tabla
+    refRegistros.on("child_added", snapshot => {
       const data = snapshot.val();
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -83,6 +133,17 @@
         <td>${data.clave_sms || ""}</td>
       `;
       document.querySelector("#tabla tbody").prepend(row);
+    });
+
+    // Leer estado inicial del switch
+    refPanel.child("modo").on("value", snap => {
+      document.getElementById("modoSwitch").checked = snap.val() === "activo";
+    });
+
+    // Cambiar el estado desde el switch
+    document.getElementById("modoSwitch").addEventListener("change", (e) => {
+      const estado = e.target.checked ? "activo" : "inactivo";
+      refPanel.child("modo").set(estado);
     });
   </script>
 </body>
